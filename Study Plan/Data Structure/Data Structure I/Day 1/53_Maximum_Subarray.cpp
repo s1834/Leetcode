@@ -12,6 +12,10 @@ public:
             }
         }
 
+        if (temp > max) {
+             max = temp;
+        }
+        
         return max;
     }
 };
