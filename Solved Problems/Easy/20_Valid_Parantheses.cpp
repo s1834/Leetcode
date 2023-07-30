@@ -12,6 +12,8 @@ public:
                     char top = st.top();
                     if ((s[i] == ')' && top == '(') || (s[i] == ']' && top == '[') || (s[i] == '}' && top == '{')) {
                         st.pop();
+                    } else {
+                        return false;
                     }
                 } else {
                     return false;
