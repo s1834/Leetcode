@@ -1,31 +1,22 @@
 class Solution {
 public:
     vector<int> findErrorNums(vector<int>& nums) {
-        sort(nums.begin(), nums.end());
-        vector<int> vect;
-        int size = nums.size(), count = 1, miss = 0, flag = 2;
-
-        for (int i = 1; i < size; i++) {
-            if (!flag) {
-                break;
-            }
-            if (nums[i - 1] != i) {
-                miss = i;
-                flag--;
-            }
-            count++;
-            if (nums[i] != nums[i - 1] || i == size - 1) {
-                if (count > 2 || (size == 2 && count == 2)) {
-                    vect.push_back(nums[i - 1]);
-                    flag--;
+        int n = nums.size();
+        vector<int> ans;
+        for (int i = 0; i < n; i++) {
+            if(nums[i] == nums[i + 1]) {
+                if (i > 0 && nums[i] != nums[i - 1] + 1) {
+                    ans.push_back(nums[i]);
+                    ans.push_back(nums[i - 1] + 1);
+                    break;
+                } else {
+                    ans.push_back(nums[i]);
+                    ans.push_back(nums[i] + 1);
+                    break;
                 }
-                count = 1;
             }
         }
-        if (flag) {
-            miss = nums[size - 1] + 1;
-        }
-        vect.push_back(miss);
-        return vect;
+
+        return ans;
     }
 };
