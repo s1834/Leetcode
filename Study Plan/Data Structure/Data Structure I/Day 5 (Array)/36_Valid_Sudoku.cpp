@@ -1,9 +1,9 @@
 class Solution {
 public:
     bool checkRows(vector<vector<char>>& board) {
-        for (int i = 0; i < 9; i++) {
         map<char, int> mp;
-            for (int j = 0; j < 9; j++) {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j <9; j++) {
                 if (board[i][j] != '.') {
                     mp[board[i][j]]++;
                     if (mp[board[i][j]] > 1) {
@@ -18,8 +18,8 @@ public:
     }
 
     bool checkColumns(vector<vector<char>>& board) {
-        for (int i = 0; i < 9; i++) {
         map<char,int> mp;
+        for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 if (board[j][i] != '.') {
                     mp[board[j][i]]++;
@@ -35,9 +35,9 @@ public:
     }
 
     bool checkBlock(vector<vector<char>>& board) {
-        for (int i = 0; i < 9; i += 3) {
         map<char,int> mp;
-            for(int j = i; j < 9; j += 3) {
+        for (int i = 0; i < 9; i += 3) {
+            for(int j = 0; j < 9; j += 3) {
                 for (int m = 0; m < 3; m++) {
                     for (int n = 0; n < 3; n++) {
                         if (board[i + m][j + n] != '.') {
@@ -47,8 +47,8 @@ public:
                             }
                         }
                     }
-                    mp.clear();
                 }
+                mp.clear();
             }
         }
 
