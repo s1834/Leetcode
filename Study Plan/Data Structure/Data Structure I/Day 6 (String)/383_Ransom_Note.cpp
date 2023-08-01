@@ -10,7 +10,7 @@ public:
             mp2[ransomNote[i]]++;
         }
         for (int i = 0; i < n1; i++) {
-            if (mp2[magazine[i]] != mp2[ransomNote[i]]) {
+            if (mp1[ransomNote[i]] != mp2[ransomNote[i]]) {
                 return false;
             }
         }
