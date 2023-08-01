@@ -9,8 +9,8 @@ public:
         for (int i = 0; i < n2; i++) {
             mp2[ransomNote[i]]++;
         }
-        for (int i = 0; i < n1; i++) {
-            if (mp1[ransomNote[i]] != mp2[ransomNote[i]]) {
+        for (auto x:mp2) {
+            if (x.second > mp1[x.first]) {
                 return false;
             }
         }
