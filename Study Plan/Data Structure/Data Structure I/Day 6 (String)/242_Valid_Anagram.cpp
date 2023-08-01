@@ -3,6 +3,9 @@ public:
     bool isAnagram(string s, string t) {
         map<char, int> mp1, mp2; 
         int n1 = s.size(), n2 = t.size();
+        if (n1 != n2) {
+            return false;
+        }
         for (int i = 0; i < n1; i++) {
             mp1[t[i]]++;
         }
