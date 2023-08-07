@@ -7,7 +7,9 @@ public:
             if (s[i] == 'i' && i > 1) {
                 reverse(ans.begin(), ans.end());
             } else {
-                ans += s[i];
+                if (s[i] != 'i') {
+                    ans += s[i];
+                }
             }
         }
         return ans;
