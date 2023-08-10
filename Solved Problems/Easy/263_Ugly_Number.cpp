@@ -15,7 +15,7 @@ public:
             return false;
         }
 
-        for (int i = 2; i <= n / 2; i++) {
+        for (int i = 2; i <= n; i++) {
             if (n % i == 0 && (i != 2 && i != 3 && i != 5)) {
                 if (isPrime(i)) {
                     return false;
