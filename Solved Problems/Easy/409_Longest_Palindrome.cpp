@@ -7,16 +7,16 @@ public:
             mp[s[i]]++;
         }
 
-        n = mp.size();
-        int sum = 0, max = 0;
+        int odd = 0;
         for (auto i : mp) {
-            if (i.second % 2 == 0) {
-                sum += i.second;
-            } else if (i.second > max) {
-                max = i.second;
+            if (i.second % 2 != 0) {
+                odd++;
             }
         }
 
-        return sum + max;
+        if (odd) {
+            return n - odd + 1;
+        }
+        return n;
     }
 };
