@@ -20,7 +20,7 @@ public:
         while (headA) {
             while (ptrB) {
                 if(headA == ptrB) {
-                    return headA, headB;
+                    return headA, ptrB;
                 }
                 if (headA->next == ptrB->next) {
                     return headA->next, ptrB->next;
