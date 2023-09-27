@@ -19,6 +19,9 @@ public:
         ListNode* ptrB = headB;
         while (headA) {
             while (ptrB) {
+                if(headA == ptrB) {
+                    return headA, headB;
+                }
                 if (headA->next == ptrB->next) {
                     return headA->next, ptrB->next;
                 }
