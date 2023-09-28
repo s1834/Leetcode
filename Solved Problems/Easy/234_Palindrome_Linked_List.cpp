@@ -22,7 +22,7 @@ public:
             ptr = ptr->next;
         }
         ptr = head;
-        count /= 2;
+        count = (count % 2) ? count / 2 - 1 : count / 2;
         ListNode *prev = NULL, *cur = head, *nxt = cur->next;
         while (count) {
             cur->next = prev;
