@@ -33,7 +33,11 @@ public:
 
         }
         ListNode* newNode = new ListNode(sum);
-        ptr->next = newNode;
+        if (flag) {
+            head1 = newNode;
+        } else {
+            ptr->next = newNode;
+        }
 
         return head1;
     }
