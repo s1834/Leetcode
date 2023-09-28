@@ -11,41 +11,35 @@
 class Solution {
 public:
     int pairSum(ListNode* head) {
-        if (!head || !head->next) {
+        if (!head) {
             return 0;
         }
-
-        int sum = 0, tempSum = 0, count = 0;
-        ListNode* cur = head, *prev = NULL;
-        while (cur) {
+        
+        int count = 0;
+        ListNode* ptr = head;
+        while (ptr) {
             count++;
-            cur = cur->next;
+            ptr = ptr->next;
         }
-        cur = head;
-        int n = count / 2 - 1;
-        for (int i = 0; i < n; i++) {
+        ptr = head;
+        count /= 2;
+        ListNode *prev = NULL, *cur = head, *nxt = cur->next;
+        while (count) {
+            cur->next = prev;
             prev = cur;
-            cur = cur->next;
+            cur = nxt;
+            nxt = cur->next;
+            count--;
         }
-
-        while (count && cur->next->next) {
-            tempSum += cur->val + cur->next->val;
-            if (sum < tempSum) {
+        
+        int sum = 0, tempSum = 0;
+        while (prev && cur) {
+            tempSum = prev->val + cur->val;
+            prev = prev->next;
+            cur = cur->next;
+            if (tempSum > sum) {
                 sum = tempSum;
             }
-            prev->next = cur->next->next;
-            cur = prev;
-            prev = head;
-            count -= 2;
-            n = count / 2 - 2;
-            tempSum = 0;
-            for (int i = 0; i < n; i++) {
-                prev = prev->next;
-            }
-        }
-        tempSum += cur->val + cur->next->val;
-        if (sum < tempSum) {
-            sum = tempSum;
         }
 
         return sum;
