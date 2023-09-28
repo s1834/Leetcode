@@ -24,7 +24,7 @@ public:
         ptr = head;
         count = (count % 2) ? count / 2 - 1 : count / 2;
         ListNode *prev = NULL, *cur = head, *nxt = cur->next;
-        while (count) {
+        while (count && cur->next) {
             cur->next = prev;
             prev = cur;
             cur = nxt;
