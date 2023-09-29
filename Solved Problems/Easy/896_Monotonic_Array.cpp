@@ -12,6 +12,9 @@ public:
                 if (nums[0] != nums[i]) {
                     flag = nums[0] < nums[i] ? 0 : 1;
                 }
+                if (flag == 2 && i == n - 1) {
+                    return true;
+                }
             }
         }
 
