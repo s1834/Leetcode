@@ -17,6 +17,9 @@ public:
             count++;
             ptr = ptr->next;
         }
+        if (count < 2) {
+            return NULL;
+        }
         ptr = head;
         count = count % 2 ? (count - 1) / 2 - 1 : count / 2 - 1;
         for (int i = 0; i < count; i++) {
