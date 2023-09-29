@@ -15,7 +15,7 @@ public:
             return NULL;
         }
         ListNode* odd = head, *even = head->next, *join = head->next;
-        while (odd && even) {
+        while (odd->next && even->next) {
             odd->next = even->next;
             odd = even->next;
             even->next = odd->next;
