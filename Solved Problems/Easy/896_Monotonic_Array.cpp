@@ -6,7 +6,15 @@ public:
             return true;
         }
 
-        int flag = nums[0] < nums[1] ? 0 : 1;
+        int flag = 2;
+        while (flag == 2) {
+            for (int i = 1; i < n; i++) {
+                if (nums[0] != nums[i]) {
+                    flag = nums[0] < nums[i] ? 0 : 1;
+                }
+            }
+        }
+
         if (flag) {
             for (int i = 0; i < n - 1; i++) {
                 if (nums[i] < nums[i + 1]) {
