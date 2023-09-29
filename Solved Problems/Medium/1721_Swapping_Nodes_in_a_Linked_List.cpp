@@ -31,6 +31,9 @@ public:
             ptr = ptr->next;
         }
         end = ptr;
+        if (front == end) {
+            return head;
+        }
         front->val = front->val + end->val;
         end->val = front->val - end->val;
         front->val = front->val - end->val;
