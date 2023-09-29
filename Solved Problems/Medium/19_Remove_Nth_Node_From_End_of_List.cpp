@@ -21,6 +21,9 @@ public:
             return NULL;
         }
         ptr = head;
+        if (count == n) {
+            head = ptr->next;
+        }
         count = count - n - 1;
         for (int i = 0; i < count; i++) {
             ptr = ptr->next;
