@@ -7,15 +7,19 @@ public:
             mp[nums[i]]++;
         }
         for(auto x:mp) {
-            if (x.second % 3 == 0) {
-                count += x.second / 3;
-            } else if (x.second % 2 == 0) {
-                count += x.second / 2;
-            } else {
-                return -1;
+            while(x.second >= 1) {
+                if(x.second - 3 > 1 || x.second - 3 == 0) {
+                    x.second -= 3;
+                    count++;
+                } else if (x.second - 2 > 1 || x.second - 2 == 0) {
+                    x.second -= 2;
+                    count++;
+                } else {
+                    return -1;
+                }
             }
         }
-        
+
         return count;
     }
 };
