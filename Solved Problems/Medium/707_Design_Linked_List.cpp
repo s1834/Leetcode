@@ -61,6 +61,10 @@ public:
             head = newNode;
             return;
         }
+        if (index == 0)  {
+            addAtHead(val);
+            return;
+        } 
         ListNode* ptr = head;
         while (--index && ptr->next) {
             ptr = ptr->next;
@@ -72,7 +76,7 @@ public:
     }
     
     void deleteAtIndex(int index) {
-        if (index > totalNodes) {
+        if (index >= totalNodes) {
             return;
         }
         if (!head) {
@@ -80,17 +84,20 @@ public:
         }
         ListNode* ptr = head, *ptr1 = head;
         while (index-- && ptr->next) {
+            cout << index;
             ptr1 = ptr;
             ptr = ptr->next;
         } 
-        if (!ptr1->next) {
+        if (!ptr->next) {
             ptr1->next = NULL;
             totalNodes--;
+            delete ptr;
             return;
         }
         ptr1->next = ptr->next;
-        ptr->next->prev = ptr1;
+        ptr1->next->prev = ptr1;
         totalNodes--;
+        delete ptr;
     }
 };
 
