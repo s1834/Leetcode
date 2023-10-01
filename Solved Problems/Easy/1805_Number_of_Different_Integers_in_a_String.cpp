@@ -15,7 +15,11 @@ public:
                 count++;
                 zero = 0;
             }
-            if (!isdigit(word[i]) && temp != "") {
+            if (!isdigit(word[i]) && (temp != "" || zero)) {
+                if (zero) {
+                    s1.insert("0");
+                    continue;
+                }
                 s1.insert(temp);
                 temp = "";
                 count = 0;
