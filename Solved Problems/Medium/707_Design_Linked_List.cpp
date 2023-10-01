@@ -83,6 +83,11 @@ public:
             ptr1 = ptr;
             ptr = ptr->next;
         } 
+        if (!ptr1->next) {
+            ptr1->next = NULL;
+            totalNodes--;
+            return;
+        }
         ptr1->next = ptr->next;
         ptr->next->prev = ptr1;
         totalNodes--;
