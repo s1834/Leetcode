@@ -15,7 +15,7 @@ public:
         } else if (carType == 2 && m) {
             m--;
             return true;
-        } else if (s) {
+        } else if (carType == 3 && s) {
             s--;
             return true;
         } else {
