@@ -12,8 +12,7 @@ private:
     int totalNodes = 0;
 public:
     MyLinkedList() {
-        head = new ListNode();
-        totalNodes++;
+        head = NULL;
     }
     
     int get(int index) {
@@ -21,9 +20,8 @@ public:
             return -1;
         }
         ListNode* ptr = head;
-        while (index && ptr->next) {
+        while (index-- && ptr->next) {
             ptr = ptr->next;
-            index--;
         }
         return ptr->val;
     }
@@ -32,8 +30,6 @@ public:
         ListNode* ptr = new ListNode(val);
         if (!head) {
             head = ptr;
-            totalNodes++;
-            cout<<head->val<<"addathead\n";
             return;
         }
         ptr->next = head;
@@ -42,11 +38,15 @@ public:
     }
     
     void addAtTail(int val) {
+        ListNode* newNode = new ListNode(val);
+        if (!head) {
+            head = newNode;
+            return;
+        }
         ListNode* ptr = head;
         while (ptr->next) {
             ptr = ptr->next;
         }
-        ListNode* newNode = new ListNode(val);
         ptr->next = newNode;
         newNode->prev = ptr;
         totalNodes++;
@@ -56,11 +56,15 @@ public:
         if (index > totalNodes) {
             return;
         }
+        ListNode* newNode = new ListNode(val);
+        if (!head) {
+            head = newNode;
+            return;
+        }
         ListNode* ptr = head;
-        while (index-- && ptr->next) {
+        while (--index && ptr->next) {
             ptr = ptr->next;
         } 
-        ListNode* newNode = new ListNode(val);
         newNode->next = ptr->next;
         ptr->next = newNode;
         newNode->prev = ptr;
@@ -71,16 +75,16 @@ public:
         if (index > totalNodes) {
             return;
         }
-        ListNode* ptr = head;
+        if (!head) {
+            return;
+        }
+        ListNode* ptr = head, *ptr1 = head;
         while (index-- && ptr->next) {
+            ptr1 = ptr;
             ptr = ptr->next;
         } 
-        ptr->next = ptr->next->next;
-        if (!ptr->next->next) {
-            ptr->next->next = NULL;
-        } else {
-            ptr->next->next->prev = ptr;
-        }
+        ptr1->next = ptr->next;
+        ptr->next->prev = ptr1;
         totalNodes--;
     }
 };
