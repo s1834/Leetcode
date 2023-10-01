@@ -18,29 +18,32 @@ public:
             head = newNode;
             return;
         }
-        ListNode* ptr = head;
-        while (ptr->next) {
+        ListNode* ptr = head, *ptr1 = head;;
+        while (ptr) {
             if(ptr->val == key) {
                 return;
             }
+            ptr1 = ptr;
             ptr = ptr->next;
         }
-        if(ptr->val == key) {
-                return;
-        }
-        ptr->next = newNode;
+        ptr1->next = newNode;
     }
     
     void remove(int key) {
         if (!head) {
             return;
         }
-        ListNode* ptr = head;
-        while (ptr->next) {
-            if (ptr->next->val == key) {
-                ptr->next = ptr->next->next;
+        ListNode* ptr = head, *ptr1 = head;
+        if (ptr->val == key) {
+            head = head->next;
+            return;
+        }
+        while (ptr) {
+            if (ptr->val == key) {
+                ptr1->next = ptr->next;
                 break;
             }
+            ptr1 = ptr;
             ptr = ptr->next;
         }
     }
