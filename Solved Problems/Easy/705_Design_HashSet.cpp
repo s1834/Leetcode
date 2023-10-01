@@ -20,6 +20,9 @@ public:
         }
         ListNode* ptr = head;
         while (ptr->next) {
+            if(ptr->val == key) {
+                return;
+            }
             ptr = ptr->next;
         }
         if(ptr->val == key) {
