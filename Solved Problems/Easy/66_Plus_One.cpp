@@ -1,7 +1,8 @@
 class Solution {
 public:
     vector<int> plusOne(vector<int>& digits) {
-        int n = digits.size(), ten = n - 1, sum = 0;
+        int n = digits.size(), ten = n - 1;
+        long long int sum = 0;
         for (int i = 0; i < n; i++) {
             sum += digits[i] * pow(10, ten);
             ten--;
