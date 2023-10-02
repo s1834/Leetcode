@@ -21,6 +21,22 @@ private:
         return count;
     }
 
+    ListNode* reverse(ListNode* head) {
+        if (!head->next) {
+            return head;
+        }
+        ListNode* prev = NULL, *cur = head, *nxt = cur->next;
+        while (nxt) {
+            cur->next = prev;
+            prev = cur;
+            cur = nxt;
+            nxt = nxt->next;
+        }
+        cur->next = prev;
+        prev = cur;
+        return prev;
+    }
+
     ListNode* add(ListNode* head1, ListNode* head2) {
         ListNode* ptr1 = head1, *ptr2 = head2, *temp = ptr1;
         while (ptr1 && ptr2) {
@@ -68,12 +84,14 @@ private:
 public:
     ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
         int count1 = count(l1), count2 = count(l2);
+        l1 = reverse(l1);
+        l2 = reverse(l2);
         if (count1 >= count2) {
             l1 = add(l1, l2);
-            return l1;
+            return reverse(l1);
         } else {
             l2 = add(l2, l1);
-            return l2;
+            return reverse(l2);
         }
     }
 };
