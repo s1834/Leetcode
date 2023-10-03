@@ -10,7 +10,7 @@
  */
 class Solution {
 private: 
-    ListNode* part(ListNode* head1, ListNode* head2, int x, int flag) {
+    ListNode* part(ListNode* head1, ListNode* head2, ListNode* temp, int x, int t, int flag) {
         ListNode* ptr1 = head1, *ptr2 = head2, *temp1 = ptr1, *temp2 = ptr2;
         while (ptr1->next && ptr2->next) {
             if (flag) {
@@ -29,15 +29,17 @@ private:
                     ptr2 = ptr2->next;
                     flag = 1;
                 }
-            }
-            
+            }  
         }
 
         if (!ptr1->next) {
             ptr2->next = NULL;
+            if (!t) {
+                ListNode* ptr;
+            }
             ptr1->next = head2;                    
         }
-        if (!ptr2->next) {
+        if (!ptr2->next) { 
             ptr1->next = head2;
         }
 
@@ -50,37 +52,55 @@ public:
             return head;
         }
 
-        ListNode *ptr1 = head, *ptr2 = head, *head1, *head2;
+        ListNode *ptr1 = head, *head1, *head2, *temp;
         int ls = 1, mx = 1, flag = 0;
-        while (ptr1 && ptr2 && (ls || mx)) {
-            if (ls && ptr1->val < x) {
-                head1 = ptr1;
-                ls = 0;
-                if (!flag) {
-                    flag = 1;
+        while (ptr1 && (ls || mx)) {
+            if (ptr1->val < x) {
+                if (!ls) {
+                    temp->next = ptr1;
+                    temp = temp->next;
+                } else {
+                    head1 = ptr1;
+                    ls = 0;
+                    if (!flag) {
+                        temp = head1;
+                        flag = 1;
+                    }
                 }
             }
-            if (mx && ptr2->val >= x) {
-                head2 = ptr2;
-                mx = 0;
-                if (!flag) {
-                    flag = 2;
+            if (ptr1->val >= x) {
+                if (!mx) {
+                    temp->next = ptr1;
+                    temp = temp->next;
+                } else {
+                    head2 = ptr1;
+                    mx = 0;
+                    if (!flag) {
+                        temp = head2;
+                        flag = 2;
+                    }
                 }
             }
             ptr1 = ptr1->next;
-            ptr2 = ptr2->next;
         }
 
         if (ls || mx) {
             return head;
         }
 
-       if (flag == 1) {
-           head1 = part(head1, head2, x, 1);
-           return head1;
-       } else {
-           head2 = part(head1, head2, x, 0);
-           return head2;
-       }
+        if (flag == 1) {
+            part(temp, head2, head1, x, 1, 1);
+            return head1;
+        } else {
+            cout << head1 ->val << " " << temp->val << " " << head2->val;
+            part(head1, temp, head2, x, 0, 0);
+            ListNode* pt = head1, *pt1 = head1;
+            while (pt->val < x) {
+                pt1 = pt;
+                pt = pt->next;
+            }
+            pt1->next = head2;
+            return head1;
+        }
     }
 };
