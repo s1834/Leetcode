@@ -35,6 +35,8 @@ public:
                     return false;
                 }
                 que1.push(front1->left);
+            } else if (front2->left != NULL){
+                return false;
             }
             
             if (front1->right != NULL) {
@@ -44,7 +46,9 @@ public:
                     return false;
                 }
                 que1.push(front1->right);
-            }       
+            } else if (front2->right != NULL){
+                return false;
+            }   
         }
         return true;
     }
