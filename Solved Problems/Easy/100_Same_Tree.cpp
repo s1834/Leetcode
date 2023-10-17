@@ -15,6 +15,9 @@ public:
         if(!p && !q) {
             return true;
         }
+        if (!p || !q) {
+            return false;
+        }
         queue<TreeNode *> que1, que2;
         que1.push(p);
         que2.push(q);
