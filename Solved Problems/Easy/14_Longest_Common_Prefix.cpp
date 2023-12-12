@@ -19,8 +19,7 @@ public:
             }
             if (temp) {
                 s += strs[0][i];
-            }
-            if (i == 0 && !temp) {
+            } else {
                 break;
             }
         }
