@@ -1,8 +1,8 @@
 class Solution {
 public:
     int rangeSum(vector<int>& nums, int n, int left, int right) {
-        vector<int> sum;
-        int count = -1;
+        vector<long long> sum;
+        long long int count = -1;
         for(int i = 0; i < n; i++) {
             sum.push_back(nums[i]);
             count++;
@@ -18,6 +18,6 @@ public:
             count += sum[i];
         }
 
-        return count;
+        return count % 1000000007;
     }
 };
