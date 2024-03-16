@@ -1,7 +1,8 @@
 class Solution {
 public:
     vector<long long> unmarkedSumArray(vector<int>& nums, vector<vector<int>>& queries) {
-        int n = nums.size(), sum = 0;
+        int n = nums.size();
+        long long sum = 0;
         for (int i = 0; i < n; i++) {
             sum += nums[i];
         }
