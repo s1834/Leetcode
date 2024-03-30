@@ -9,6 +9,7 @@ public:
                 if(temp >= k) {
                     if(count > tempCount) {
                         count = tempCount;
+                        break;
                     }
                     sum = temp;
                     temp = 0;
@@ -19,6 +20,7 @@ public:
                     count = 1;
                     temp = 0;
                     tempCount = 0;
+                    break;
                 }
             }
         }
