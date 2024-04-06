@@ -20,15 +20,14 @@ public:
             }
         }
         cout << temp;
+        n = temp.size();
         string ans = "";
         if(!st.empty()) {
             for (int i = n - 1; i >= 0; i--) {
                 if(!st.empty() && temp[i] == st.top()) {
                     st.pop();
                 } else {
-                    if(temp[i]) {
-                        ans += temp[i];
-                    }
+                   ans += temp[i];
                 }
             }
             reverse(ans.begin(), ans.end());
