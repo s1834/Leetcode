@@ -6,7 +6,7 @@ public:
         if(n[0] == '-') {
             ans += "-";
             for(int i = 1; i < size; i++) {
-                if(insert && n[i] - '0' >= x) {
+                if(insert && n[i] - '0' > x) {
                     ans += to_string(x);
                     insert = 0;
                 }
