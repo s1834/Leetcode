@@ -25,17 +25,26 @@ public:
         }
  
         vector<int> v;
+        int count = 0;
         for(auto x : mpCount) {
-            if(x.second == 1) {
-                return true;
-            }
             v.push_back(x.first);
+            if(x.second > 1) {
+                count++;
+            }
+            if(x.second == 1) {
+                if((v.size() == 2 && abs(v[0] - v[1]) == 1) || (v.size() == 1 && x.first == 1)) {
+                    return true;
+                }
+            }
+            if (count == 2) {
+                return false;
+            }
         }
 
         if(abs(v[0] * mpCount[v[0]] - v[1] * mpCount[v[1]]) != 1) {
             return false;
         } 
-
+        
         return true;
     }
 };
