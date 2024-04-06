@@ -19,18 +19,17 @@ public:
                 temp += s[i];
             }
         }
-
+        cout << temp;
         string ans = "";
         if(!st.empty()) {
             for (int i = 0; i < n; i++) {
-                if(st.empty()) {
-                    break;
-                }
-                if(temp[i] == st.top()) {
+                if(!st.empty() && temp[i] == st.top()) {
                     st.pop();
-                    continue;
+                } else {
+                    if(temp[i]) {
+                        ans += temp[i];
+                    }
                 }
-                ans += temp[i];
             }
         } else {
             ans = temp;
