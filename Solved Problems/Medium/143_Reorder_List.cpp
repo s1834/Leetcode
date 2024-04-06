@@ -11,6 +11,10 @@
 class Solution {
 public:
     void reorderList(ListNode* head) {
+        if(!head || !head->next) {
+            return;
+        }
+        
         stack<ListNode*> st;
         ListNode* ptr1 = head;
         int count = 0;
