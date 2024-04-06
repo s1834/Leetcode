@@ -32,10 +32,10 @@ public:
             v.push_back(x.first);
         }
 
-        if(abs(v[0] - v[1]) != 1) {
+        if(abs(v[0] * mpCount[v[0]] - v[1] * mpCount[v[1]]) != 1) {
             return false;
         } 
-        
+
         return true;
     }
 };
