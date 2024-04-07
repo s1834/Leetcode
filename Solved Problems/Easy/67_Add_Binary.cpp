@@ -33,16 +33,17 @@ public:
         }
         int size;
         if(n1 > n2) {
-            size = n1 - n;
+            size = n1;
         } else {
-            size = n2 - n;
+            size = n2;
             a = b;
         }
-        for (int i = n - 1; i < size; i++) {
+        for (int i = n; i < size; i++) {
             if(a[i] == '1' && carry == '1') {
                 ans += '0';
             } else if ((a[i] == '1' && carry == '0') || (a[i] == '0' && carry == '1')) {
                 ans += '1';
+                carry = '0';
             } else {
                 ans += '0';
             }
