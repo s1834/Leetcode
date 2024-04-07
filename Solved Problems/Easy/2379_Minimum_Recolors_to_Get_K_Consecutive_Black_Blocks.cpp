@@ -8,11 +8,11 @@ public:
             }
         }
         mn = count;
-        for(int i = k; i < n - k; i++) {
-            if(blocks[i - k] == 'W') {
+        for(int i = 0; i < n - k; i++) {
+            if(blocks[i] == 'W') {
                 count--;
             }
-            if(blocks[i] == 'W') {
+            if(blocks[i + k] == 'W') {
                 count++;
             }
             mn = min(mn, count);
