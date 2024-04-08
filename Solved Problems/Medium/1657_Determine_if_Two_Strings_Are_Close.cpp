@@ -25,7 +25,9 @@ public:
         }
 
         set<int> st1, st2;
+        n1 = mp1.size();
         for (int i = 0; i < n1; i++) {
+            cout << mp1[word1[i]]<<endl;
             st1.insert(mp1[word1[i]]);
         }
         for (int i = 0; i < n2; i++) {
