@@ -18,6 +18,12 @@ public:
             return false;
         }
 
+        for(auto x1 = mp1.begin(), x2 = mp2.begin(); x1 != mp1.end(); ++x1, ++x2) {
+            if(x1->first != x2->first) {
+                return false;
+            }
+        }
+
         set<int> st1, st2;
         for (int i = 0; i < n1; i++) {
             st1.insert(mp1[word1[i]]);
