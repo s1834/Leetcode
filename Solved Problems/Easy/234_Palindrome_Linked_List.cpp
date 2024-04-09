@@ -10,36 +10,18 @@
  */
 class Solution {
 public:
-    bool isPalindrome(ListNode* head) {
-        if (!head) {
-            return 0;
-        }
-        
-        int count = 0;
-        ListNode* ptr = head;
-        while (ptr) {
-            count++;
-            ptr = ptr->next;
-        }
-        ptr = head;
-        count = (count % 2) ? count / 2 - 1 : count / 2;
-        ListNode *prev = NULL, *cur = head, *nxt = cur->next;
-        while (count && cur->next) {
-            cur->next = prev;
-            prev = cur;
-            cur = nxt;
-            nxt = cur->next;
-            count--;
-        }
-        
-        while (prev && cur) {
-            if (prev->val != cur->val) {
-                return false;
-            }
-            prev = prev->next;
-            cur = cur->next;
+    bool palindrome(ListNode* &begin, ListNode* &end) {
+        if(!end) {
+            return true;
         }
 
-        return true;
+        bool ans = palindrome(begin, end->next) && (begin->val == end->val);
+        begin = begin->next;
+
+        return ans;
+    }
+
+    bool isPalindrome(ListNode* head) {
+        return palindrome(head, head);
     }
 };
