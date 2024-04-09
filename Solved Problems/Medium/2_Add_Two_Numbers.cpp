@@ -9,89 +9,35 @@
  * };
  */
 class Solution {
-private:
-    int carry = 0;
-    int count(ListNode* head) {
-        ListNode* ptr = head;
-        int count = 0;
-        while(ptr) {
-            count++;
-            ptr = ptr->next;
-        }
-        return count;
-    }
-
-    ListNode* reverse(ListNode* head) {
-        if (!head->next) {
-            return head;
-        }
-        ListNode* prev = NULL, *cur = head, *nxt = cur->next;
-        while (nxt) {
-            cur->next = prev;
-            prev = cur;
-            cur = nxt;
-            nxt = nxt->next;
-        }
-        cur->next = prev;
-        prev = cur;
-        return prev;
-    }
-
-    ListNode* add(ListNode* head1, ListNode* head2) {
-        ListNode* ptr1 = head1, *ptr2 = head2, *temp = ptr1;
-        while (ptr1 && ptr2) {
-             if (ptr1->val + ptr2->val + carry > 9) {
-                ptr1->val = (ptr1->val + ptr2->val + carry) % 10;
-                carry = 1;
-            } else {
-                ptr1->val = ptr1->val + ptr2->val + carry;
-                carry = 0;
-            }
-            temp = ptr1;
-            ptr1 = ptr1->next;
-            if (!ptr2->next && carry) {
-                if (!ptr1) {
-                    temp->next = new ListNode(1);
-                    return head1;
-                }
-                add(ptr1);
-                break;
-            }
-            ptr2 = ptr2->next;
-        }
-        return head1;
-    }
-
-    ListNode* add(ListNode* head) {
-        ListNode* ptr = head;
-        while(ptr && carry) {
-            if (ptr->val + carry > 9) {
-                ptr->val = (ptr->val + carry) % 10;
-                carry = 1;
-            } else {
-                ptr->val = ptr->val + carry;
-                carry = 0;
-            }
-            if(!ptr->next && carry) {
-                ptr->next = new ListNode(1);
-                break;
-            }
-            ptr = ptr->next;
-        }
-        return head;
-    }
-    
 public:
-    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
-        int count1 = count(l1), count2 = count(l2);
-        l1 = reverse(l1);
-        l2 = reverse(l2);
-        if (count1 >= count2) {
-            l1 = add(l1, l2);
-            return reverse(l1);
-        } else {
-            l2 = add(l2, l1);
-            return reverse(l2);
+    ListNode* add(ListNode* l1, ListNode* l2, int carry) {
+        if(!l1 && !l2) {
+            return l1;
         }
+ 
+        if(l1 && !l2) {
+            int sum = l1->val + carry;
+            l1->val = sum % 10;
+            if(!l1->next && sum / 10) {
+                ListNode* newNode = new ListNode(carry);
+                l1->next = newNode;
+                l1 = l1->next;
+            }
+            add(l1->next, l2, sum / 10);
+        } else {
+            int sum = l1->val + l2->val + carry;
+            l1->val = sum % 10;
+            if(!l1->next && l2->next) {
+                l1->next = l2->next;
+                l2->next = NULL;
+            }
+            add(l1->next, l2->next, sum / 10);
+        }
+
+        return l1;
+    }
+
+    ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
+        return add(l1, l2, 0);   
     }
 };
