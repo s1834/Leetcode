@@ -19,7 +19,7 @@ public:
             int sum = l1->val + carry;
             l1->val = sum % 10;
             if(!l1->next && sum / 10) {
-                ListNode* newNode = new ListNode(carry);
+                ListNode* newNode = new ListNode(sum / 10);
                 l1->next = newNode;
                 l1 = l1->next;
             }
@@ -31,7 +31,13 @@ public:
                 l1->next = l2->next;
                 l2->next = NULL;
             }
-            add(l1->next, l2->next, sum / 10);
+            if(!l1->next && sum / 10) {
+                ListNode* newNode = new ListNode(sum / 10);
+                l1->next = newNode;
+                add(l1->next->next, l2->next, 0);
+            } else {
+                add(l1->next, l2->next, sum / 10);
+            }
         }
 
         return l1;
