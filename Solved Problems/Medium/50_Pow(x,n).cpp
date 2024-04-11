@@ -4,11 +4,13 @@ public:
         if(n == 0) {
             return 1;
         }
+        if (n == INT_MIN) {
+            n = INT_MAX;
+        } 
         if(n < 0) {
             x = 1 / x;
             n = -n;
         }
-
         double halfPow = myPow(x, n / 2);
 
         if(n % 2) {
