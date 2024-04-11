@@ -4,24 +4,10 @@ public:
         if(n == 0) {
             return 1;
         }
-        if (n == INT_MAX) {
-            return (x == 1) ? 1 : (x == -1) ? -1 : 0;
-        }
-        if (n == INT_MIN) {
-            return (x == 1 || x == -1) ? 1 : 0;
-        }
-        if (n == INT_MIN) {
-            x = 1 / x;
-            n = INT_MAX;
-        } 
-        if(n < 0) {
-            x = 1 / x;
-            n = -n;
-        }
         double halfPow = myPow(x, n / 2);
 
         if(n % 2) {
-            return x * halfPow * halfPow;
+            return n < 0 ? 1/x * halfPow * halfPow : x * halfPow * halfPow;
         } else {
             return halfPow * halfPow;
         }
