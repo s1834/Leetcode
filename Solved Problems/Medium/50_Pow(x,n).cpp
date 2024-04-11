@@ -5,8 +5,16 @@ public:
             return 1;
         }
         if(n < 0) {
-            return x * myPow(1 / x, abs(n - 1));
+            x = 1 / x;
+            n = -n;
         }
-        return x * myPow(x, n - 1);
+
+        double halfPow = myPow(x, n / 2);
+
+        if(n % 2) {
+            return x * halfPow * halfPow;
+        } else {
+            return halfPow * halfPow;
+        }
     }
 };
