@@ -13,6 +13,9 @@ public:
             }
         }
 
-        return n + 1;
+        if(n != s.size()) {
+            return n + 1;
+        }
+        return n;
     }
 };
