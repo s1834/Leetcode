@@ -5,6 +5,9 @@ public:
         if(n % k != 0) {
             return false;
         }
+        if(k == 1) {
+            return true;
+        }
 
         map<int, int> mp;
         for(int i = 0; i < n; i++) {
