@@ -28,9 +28,8 @@ public:
                         }
                         appended = true;
                     }
-                    if(appended) {
+                    if(appended && words[i] > dictionary[j]) {
                         words[i] = dictionary[j];
-                        break;
                     }
                 }
             }
