@@ -1,7 +1,7 @@
 class Solution {
 public:
     int findWinningPlayer(vector<int>& skills, int k) {
-        int temp = 0, n = skills.size(), curWinner = skills[0];
+        int temp = 0, n = skills.size(), curWinner = skills[0], re = 0, prev;
         vector<int> skillsTemp;
         skillsTemp = skills;
         for (int i = 1; i < n; i++) {
@@ -17,8 +17,13 @@ public:
             
             if(i == n - 1) {
                 i = -1;
+                if(re > 0 && curWinner == prev) {
+                    break;
+                }
+                prev = curWinner;
+                re++;
             }
         }
-        return 0;
+        return find(skills.begin(), skills.end(), curWinner) - skills.begin();
     }
 };
