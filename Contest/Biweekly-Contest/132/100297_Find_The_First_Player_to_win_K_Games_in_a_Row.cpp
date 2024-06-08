@@ -13,6 +13,9 @@ public:
             } else {
                 temp = 1;
                 curWinner = skillsTemp[i];
+                if(temp >= k) {
+                    return find(skills.begin(), skills.end(), curWinner) - skills.begin();
+                }
             }
             
             if(i == n - 1) {
