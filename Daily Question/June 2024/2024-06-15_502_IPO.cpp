@@ -22,12 +22,17 @@ public:
         }
 
         vector<int> cap;
+        bool wExists = false;
         for (auto x : mp) {
             cap.push_back(x.first);
+            if(x.first <= w) {
+                wExists = true;
+            }
         }
 
-        while(k) {
+        while(k && wExists) {
             int maxW = 0, maxInd = 0;
+            wExists = false;
             for(int i = 0; i < cap.size(); i++) {
                 if (cap[i] > w) {
                     break;
@@ -41,6 +46,12 @@ public:
                 w += maxW;
                 cap.erase(cap.begin() + maxInd);
                 k--;
+                
+                for(int i = 0; i < cap.size(); i++) {
+                    if(cap[i] <= w) {
+                        wExists = true;
+                    }
+                }
             }
         }
 
