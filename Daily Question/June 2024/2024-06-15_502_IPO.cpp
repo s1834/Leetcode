@@ -42,7 +42,7 @@ public:
                     maxW = mp[cap[i]];
                     maxInd = i; 
                 }
-
+            }
                 w += maxW;
                 cap.erase(cap.begin() + maxInd);
                 k--;
@@ -53,7 +53,6 @@ public:
                     }
                 }
             }
-        }
 
         return w;
     }
