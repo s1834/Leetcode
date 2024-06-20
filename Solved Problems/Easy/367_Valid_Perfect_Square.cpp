@@ -1,19 +1,22 @@
 class Solution {
 public:
-    bool isPerfectSquare(int num) {
-        if (num == 1) {
+    bool square(int num, long long int l, long long int r) {
+        if(l > r) {
+            return false;
+        }
+        
+        long long int x = (l + r) / 2;
+        if(x * x == num) {
             return true;
         }
-        int n = num / 2, temp;
-        for (int i = 1; i <= n; i++) {
-            temp = i * i;
-            if (temp == num) {
-                return true;
-            }
-            if (temp > num) {
-                return false;
-            }
+        if(x * x < num) {
+            return square(num, l + 1, r);
+        } else {
+            return square(num, l, r - 1);
         }
-        return false;
+    }
+
+    bool isPerfectSquare(int num) {
+        return square(num, 1, num);
     }
 };
