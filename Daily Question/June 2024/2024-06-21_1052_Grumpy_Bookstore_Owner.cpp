@@ -4,15 +4,13 @@ public:
         int n = customers.size(), max = 0, maxInd = 0;
         for (int i = 0; i < n - minutes + 1; i++) {
             int temp = 0;
-            bool grump = false;
             for (int j = 0; j < minutes; j++) {
-                temp += customers[i + j];
-                if(!grump && grumpy[i] == 1) {
-                    grump = true;
+                if(grumpy[i + j] == 1) {
+                    temp += customers[i + j];
                 }
             }
             
-            if(grump && temp > max) {
+            if(temp > max) {
                 max = temp;
                 maxInd = i;
             }
