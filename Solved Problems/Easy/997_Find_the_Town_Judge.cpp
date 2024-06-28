@@ -1,6 +1,7 @@
 class Solution {
 public:
     int findJudge(int n, vector<vector<int>>& trust) {
+        if(n == 1) return 1;
         unordered_map<int, int> indegree;
         int siz = trust.size();
         for (int i = 0; i < siz; i++) {
