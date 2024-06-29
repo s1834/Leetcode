@@ -13,7 +13,7 @@ class Solution {
 public:
     bool isValidBST(TreeNode* root) {
         if(!root) return true;
-        if((root->left && root->val < root->left->val) || (root->right && root->val > root->right->val)) return false;
+        if((root->left && root->val <= root->left->val) || (root->right && root->val >= root->right->val)) return false;
         return isValidBST(root->left) && isValidBST(root->right);
     }
 };
