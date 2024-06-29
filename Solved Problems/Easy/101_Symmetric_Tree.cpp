@@ -13,8 +13,7 @@ class Solution {
 private:
     bool sameTree(TreeNode* rootLeft, TreeNode* rootRight) {
         if(!rootLeft && !rootRight) return true;
-        if(!rootLeft || !rootRight) return false;
-        if(rootLeft->val != rootRight->val) return false;
+        if(!rootLeft || !rootRight || rootLeft->val != rootRight->val) return false;
         return sameTree(rootLeft->left, rootRight->right) && sameTree(rootLeft->right, rootRight->left);
     }
 
