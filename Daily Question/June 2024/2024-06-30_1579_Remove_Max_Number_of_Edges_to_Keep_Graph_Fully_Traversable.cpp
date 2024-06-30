@@ -58,7 +58,7 @@ public:
                     bobDSU.unite(x, y);
                     addEdge = true;
                 }
-                if(addEdge == true) edgeCount++;
+                if(addEdge) edgeCount++;
             } else if(type == 2) {
                 if(bobDSU.find(x) != bobDSU.find(y)) {
                     bobDSU.unite(x, y);
@@ -72,7 +72,7 @@ public:
             }
         }
 
-        if(aliceDSU.isConnected() || bobDSU.isConnected()) return edges.size() - edgeCount;
-        return -1;
+        if(!aliceDSU.isConnected() || !bobDSU.isConnected()) return -1;
+        return edges.size() - edgeCount;
     }
 };
