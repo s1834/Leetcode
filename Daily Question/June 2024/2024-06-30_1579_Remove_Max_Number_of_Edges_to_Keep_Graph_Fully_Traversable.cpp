@@ -1,73 +1,78 @@
-class Solution {
+class DSU {
 private:
-    void checkPath(int i, vector<pair<int, int>>& adj, vector<int>& alice, vector<int>& bob, int& count) {
-        if(i == 3) {
-            for(auto x : adj) {
-                bool change = false;
-                if(!alice[x.first]) {
-                    alice[x.first] = 1;
-                    bob[x.first] = 1;
-                    change = true;
-                }
-
-                if(!alice[x.second]) {
-                    alice[x.second] = 1;
-                    bob[x.second] = 1;
-                    change = true;
-                }
-                
-                if(change) count++;
-            }
-        } else if(i == 2) {
-            for(auto x : adj) {
-                bool change = false;
-                if(!bob[x.first]) {
-                    bob[x.first] = 1;
-                    change = true;
-                }
-
-                if(!bob[x.second]) {
-                    bob[x.second] = 1;
-                    change = true;
-                }
-                
-                if(change) count++;
-            }
-        } else {
-            for(auto x : adj) {
-                bool change = false;
-                if(!alice[x.first]) {
-                    alice[x.first] = 1;
-                    change = true;
-                }
-
-                if(!alice[x.second]) {
-                    alice[x.second] = 1;
-                    change = true;
-                }
-                
-                if(change) count++;
-            }
-        }
-    }
+    vector<int> parent, rank;
 
 public:
+    DSU(int n) {
+        parent.resize(n + 1, -1);
+        rank.resize(n + 1, 1);
+    }
+
+    int find(int i) {
+        if(parent[i] == -1) return i;
+        return parent[i] = find(parent[i]);
+    }
+
+    void unite(int x, int y) {
+        int xParent = find(x), yParent = find(y);
+        if(xParent != yParent) {
+            if(rank[xParent] < rank[yParent]) {
+                parent[xParent] = yParent;
+            } else if(rank[yParent] < rank[xParent]) {
+                 parent[yParent] = xParent;
+            } else {
+                 parent[yParent] = xParent;
+                 rank[xParent]++;
+            }
+        } 
+    }
+
+    bool isConnected() {
+        int par = find(1), n = parent.size();
+        for(int i = 2; i < n; i++) {
+            if(par != find(i)) return false;
+        }
+        return true;
+    }
+};
+
+class Solution {
+public:
     int maxNumEdgesToRemove(int n, vector<vector<int>>& edges) {
-        vector<vector<pair<int,int>>> adj(4);
+        DSU aliceDSU(n), bobDSU(n);
+        auto lamda = [](vector<int>& v1, vector<int>& v2) {
+            return v1[0] > v2[0];
+        };
+        sort(edges.begin(), edges.end(), lamda);
+        int edgeCount = 0;
         for(auto edge : edges) {
-            adj[edge[0]].push_back(make_pair(edge[1], edge[2]));
-        }
-        
-        vector<int> alice(n + 1, 0), bob(n + 1, 0);
-        int count = 0;
-        for (int i = 3; i > 0; i--) {
-            checkPath(i, adj[i], alice, bob, count);  
+            int type = edge[0], x = edge[1], y = edge[2];
+
+            if(type == 3) {
+                bool addEdge = false;
+                if(aliceDSU.find(x) != aliceDSU.find(y)) {
+                    aliceDSU.unite(x, y);
+                    addEdge = true;
+                }
+                if(bobDSU.find(x) != bobDSU.find(y)) {
+                    bobDSU.unite(x, y);
+                    addEdge = true;
+                }
+                if(addEdge == true) edgeCount++;
+            } else if(type == 2) {
+                if(bobDSU.find(x) != bobDSU.find(y)) {
+                    bobDSU.unite(x, y);
+                    edgeCount++;
+                }
+            } else {
+                if(aliceDSU.find(x) != aliceDSU.find(y)) {
+                    aliceDSU.unite(x, y);
+                    edgeCount++;
+                }
+            }
         }
 
-        for(int i = 1; i <= n; i++) {
-            if(!alice[i] || !bob[i]) return -1;
-        }
-
-        return edges.size() - count;
+        if(aliceDSU.isConnected() || bobDSU.isConnected()) return edges.size() - edgeCount;
+        return -1;
     }
 };
