@@ -1,8 +1,10 @@
 class Solution {
 public:
     int minDifference(vector<int>& nums) {
+        if(nums.size() <= 4) return 0;
         sort(nums.begin(), nums.end());
-        if(nums.size() < 4) return 0;
-        return min(nums[nums.size() - 4] - nums[0], nums[nums.size() - 1] - nums[3]);
+        int ans = nums[nums.size() - 1] - nums[0];
+        for(int i = 0; i < 4; i++) ans = min(ans, nums[nums.size() - (3 - i) - 1] - nums[i]);
+        return ans;
     }
 };
