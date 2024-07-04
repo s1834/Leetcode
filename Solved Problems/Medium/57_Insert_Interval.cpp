@@ -22,6 +22,7 @@ public:
                 ans.push_back(v);
             }
         }
+        if(!inserted) ans.push_back(newInterval);
         return ans;
     }
 };
