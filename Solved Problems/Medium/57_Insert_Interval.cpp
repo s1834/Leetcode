@@ -16,8 +16,12 @@ public:
                 }
             } else {
                 if(v[0] >= newInterval[0]) {
-                    v[0] = min(v[0], newInterval[0]);
-                    v[1] = max(v[1], newInterval[1]);
+                    if(v[0] >= newInterval[1]) {
+                        ans.push_back(newInterval);
+                    } else {
+                        v[0] = min(v[0], newInterval[0]);
+                        v[1] = max(v[1], newInterval[1]);
+                    }
                     inserted = true;
                 } else if(v[1] >= newInterval[0]) {
                     v[1] = max(v[1], newInterval[1]);
