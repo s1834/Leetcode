@@ -10,18 +10,29 @@
  */
 class Solution {
 private:
-    ListNode* ptr, *temp;
+    ListNode* ptr;
+
+    int count(ListNode* head) {
+        int count = 0;
+        while(head) {
+            count++;
+            head = head->next;
+        }
+        return count;
+    }
+
 public:
     Solution(ListNode* head) {
         ptr = head;
-        temp = ptr;
     }
     
     int getRandom() {
-        if (!ptr) {
-            ptr = temp;
+        int random = rand() % count(ptr);
+        ListNode* temp = ptr;
+        while(random--) {
+            temp = temp->next;
         }
-        return ptr->val;
+        return temp->val;
     }
 };
 
