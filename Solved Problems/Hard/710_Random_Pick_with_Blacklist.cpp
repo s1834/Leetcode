@@ -5,9 +5,9 @@ private:
 public:
     Solution(int n, vector<int>& blacklist) {
         sort(blacklist.begin(), blacklist.end());
-        int ind = 0;
+        int ind = 0, siz = blacklist.size();
         for(int i = 0; i < n; i++) {
-            if(i != blacklist[ind]) v.push_back(i);
+            if(!siz || i != blacklist[ind]) v.push_back(i);
             else ind++;
         }    
     }
