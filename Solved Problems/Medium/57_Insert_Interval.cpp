@@ -3,19 +3,23 @@ public:
     vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
         if(!intervals.size()) return {newInterval};
         vector<vector<int>> ans;
-        bool inserted = false, resolve = false;
+        bool inserted = false, resolved = false;
         for(vector<int> v : intervals) {
-            if(resolve) {
+            if(resolved) {
                 ans.push_back(v);
             } else if(inserted) {
                 if(ans.back()[1] >= v[0]) {
                     ans.back()[1] = max(ans.back()[1], v[1]);
                 } else {
                     ans.push_back(v);
-                    resolve = true;
+                    resolved = true;
                 }
             } else {
-                if(v[1] >= newInterval[0]) {
+                if(v[0] >= newInterval[0]) {
+                    v[0] = min(v[0], newInterval[0]);
+                    v[1] = max(v[1], newInterval[1]);
+                    inserted = true;
+                } else if(v[1] >= newInterval[0]) {
                     v[1] = max(v[1], newInterval[1]);
                     inserted = true;
                 }
