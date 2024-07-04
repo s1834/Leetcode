@@ -16,7 +16,7 @@ public:
                 }
             } else {
                 if(v[0] >= newInterval[0]) {
-                    if(v[0] >= newInterval[1]) {
+                    if(v[0] > newInterval[1]) {
                         ans.push_back(newInterval);
                     } else {
                         v[0] = min(v[0], newInterval[0]);
