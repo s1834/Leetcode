@@ -1,6 +1,7 @@
 class Solution {
 public:
     vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
+        if(!intervals.size()) return {newInterval};
         vector<vector<int>> ans;
         bool inserted = false, resolve = false;
         for(vector<int> v : intervals) {
