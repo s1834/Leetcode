@@ -25,6 +25,7 @@ public:
         }
 
         int mn = INT_MAX, n = ind.size() - 1;
+        if(n < 1) return {-1, -1};
         for(int i = 0; i < n; i++) mn = min(mn, ind[i + 1] - ind[i]);
         return {mn, ind[n] - ind[0]};
     }
