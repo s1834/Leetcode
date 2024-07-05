@@ -24,7 +24,7 @@ public:
         if(!head) return nullptr;
 
         int count = numberOfNodes(head);
-        if(count == k || k == 0) return head;
+        if(count == k || k == 0 || count == 1) return head;
         count = count < k ? count - (k % count) : count - k;
 
         ListNode* ptr1 = head;
