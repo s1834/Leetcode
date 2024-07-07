@@ -41,6 +41,10 @@ public:
     }
     
     void addAtIndex(int index, int val) {
+        if(!head || index == 0) {
+            addAtHead(val);
+            return;
+        }
         ListNode* newNode = new ListNode(val);
         ListNode* ptr = head;
         while(ptr && index--) ptr = ptr->next;
