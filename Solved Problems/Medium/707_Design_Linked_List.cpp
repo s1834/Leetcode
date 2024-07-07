@@ -8,96 +8,59 @@ private:
         ListNode(int x) : val(x), next(nullptr), prev(nullptr) {}
         ListNode(int x, ListNode *next, ListNode* prev) : val(x), next(next), prev(prev) {}
     };
-    ListNode *head;
-    int totalNodes = 0;
+    ListNode* head = nullptr;
+
 public:
-    MyLinkedList() {
-        head = NULL;
-    }
+    MyLinkedList() {}
     
     int get(int index) {
-        if (index > totalNodes) {
-            return -1;
-        }
         ListNode* ptr = head;
-        while (index-- && ptr->next) {
-            ptr = ptr->next;
-        }
-        return ptr->val;
+        while(ptr && index--) ptr = ptr->next;
+        if(index == -1) return ptr->val;
+        return -1;
     }
     
     void addAtHead(int val) {
-        ListNode* ptr = new ListNode(val);
-        if (!head) {
-            head = ptr;
-            return;
-        }
-        ptr->next = head;
-        head = ptr;
-        totalNodes++;
+        ListNode* newNode = new ListNode(val);
+        newNode->next = head;
+        if(head) head->prev = newNode;
+        head = newNode;
     }
     
     void addAtTail(int val) {
-        ListNode* newNode = new ListNode(val);
-        if (!head) {
-            head = newNode;
+        if(!head) {
+            addAtHead(val);
             return;
         }
+
+        ListNode* newNode = new ListNode(val);
         ListNode* ptr = head;
-        while (ptr->next) {
-            ptr = ptr->next;
-        }
+        while(ptr->next) ptr = ptr->next;
         ptr->next = newNode;
         newNode->prev = ptr;
-        totalNodes++;
     }
     
     void addAtIndex(int index, int val) {
-        if (index > totalNodes) {
-            return;
-        }
         ListNode* newNode = new ListNode(val);
-        if (!head) {
-            head = newNode;
-            return;
-        }
-        if (index == 0)  {
-            addAtHead(val);
-            return;
-        } 
         ListNode* ptr = head;
-        while (--index && ptr->next) {
-            ptr = ptr->next;
-        } 
-        newNode->next = ptr->next;
-        ptr->next = newNode;
-        newNode->prev = ptr;
-        totalNodes++;
+        while(ptr && index--) ptr = ptr->next;
+        if(index == -1) {
+            newNode->next = ptr;
+            newNode->prev = ptr->prev;
+            ptr->prev->next = newNode;
+            ptr->prev = newNode;
+        }
+        if(index == 0) addAtTail(val);
     }
     
     void deleteAtIndex(int index) {
-        if (index >= totalNodes) {
+        if (index == 0) {
+            head = head->next;
             return;
         }
-        if (!head) {
-            return;
-        }
-        ListNode* ptr = head, *ptr1 = head;
-        while (index-- && ptr->next) {
-            cout << index;
-            ptr1 = ptr;
-            ptr = ptr->next;
-        } 
-        if (!ptr->next) {
-            ptr1->next = NULL;
-            totalNodes--;
-            delete ptr;
-            return;
-        }
-        ptr1->next = ptr->next;
-        ptr1->next->prev = ptr1;
-        totalNodes--;
-        delete ptr;
+        ListNode* ptr = head;
+        while(ptr && index--) ptr = ptr->next;
+        if(index == -1) ptr->prev->next = ptr->next;
     }
 };
 
