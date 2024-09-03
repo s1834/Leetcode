@@ -11,6 +11,7 @@ public:
                 mp[x]++;
             }
         }
+        if(mp.size() > longest) longest = mp.size();
         return longest;
     }
 };
