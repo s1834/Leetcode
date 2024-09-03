@@ -1,13 +1,19 @@
 class Solution {
 public:
     int lengthOfLongestSubstring(string s) {
-        map<char, int> mp;
+        unordered_map<char, int> mp;
         int longest = 0;
         for(auto x : s) {
             mp[x]++;
             if(mp[x] > 1) {
                 if(mp.size() > longest) longest = mp.size();
-                mp.clear();
+                for (auto y : s) {
+                    if(y == x) {
+                        mp.erase(y);
+                        break;
+                    }
+                    mp.erase(y);
+                }
                 mp[x]++;
             }
         }
