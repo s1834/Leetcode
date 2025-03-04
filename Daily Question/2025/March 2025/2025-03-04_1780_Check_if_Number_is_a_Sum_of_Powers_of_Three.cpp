@@ -9,7 +9,7 @@ class Solution {
             temp = pow(3, power);
             while(power >= 0) {
                 power--;
-                if(temp + pow(3, power) == n) return true;
+                if(temp + pow(3, power) == n || temp == n) return true;
                 else if(temp + pow(3, power) < n) temp += pow(3, power);
             }
             return false;
