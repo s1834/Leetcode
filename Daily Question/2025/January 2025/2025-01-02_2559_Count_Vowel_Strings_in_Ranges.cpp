@@ -8,28 +8,23 @@ class Solution {
             }
             return false;
         }
-    
-        int count(vector<int> indexes, int l, int r) {
-            int cnt = 0;
-            for(auto x : indexes) {
-                if (x >= l && x <= r) cnt++;
-            }
-            return cnt;
-        }
-    
+        
     public:
         vector<int> vowelStrings(vector<string>& words, vector<vector<int>>& queries) {
-            vector<int> indexes;
+            vector<int> prefixSum;
+            if(checkVowel(words[0][0], words[0][words[0].size() - 1])) prefixSum.push_back(1);
+            else prefixSum.push_back(0);
+            
             int n = words.size();
-            for(int i = 0; i < n; i++) {
-                if (checkVowel(words[i][0], words[i][words[i].size() - 1])) {
-                    indexes.push_back(i);
-                }
+            for (int i = 1; i < n; i++) {
+                if(checkVowel(words[i][0], words[i][words[i].size() - 1])) prefixSum.push_back(prefixSum[i - 1] + 1);
+            else prefixSum.push_back(prefixSum[i - 1]);
             }
     
             vector<int> ans;
-            for(auto x : queries) {
-                ans.push_back(count(indexes, x[0], x[1]));
+            for (auto x : queries) {
+                if(x[0] == 0) ans.push_back(prefixSum[x[1]]);
+                else ans.push_back(prefixSum[x[1]] - prefixSum[x[0] - 1]);
             }
             return ans;
         }
