@@ -1,26 +1,36 @@
 class Solution {
-public:
-    vector<int> vowelStrings(vector<string>& words, vector<vector<int>>& queries) {
-        vector<bool> vowel;
-        int n = words.size();
-        for (int i = 0; i < n; i++) {
-            int l = words[i].size() - 1;
-            if(words[i][0] == 'a' || words[i][0] == 'e' || words[i][0] == 'i' || words[i][0] == 'o' || words[i][0] == 'u') {
-                if(words[i][l] == 'a' || words[i][l] == 'e' || words[i][l] == 'i' || words[i][l] == 'o' || words[i][l] == 'u') vowel.push_back(true);
-                else vowel.push_back(false);
-            } else vowel.push_back(false);
-        }
-
-        vector<int> count;
-        n = queries.size();
-        int total;
-        for(int i = 0; i < n; i++) {
-        total = 0;
-            for(int j = queries[i][0]; j <= queries[i][1]; j++) {
-                if(vowel[j]) total++;
+    private:
+        bool checkVowel(char x, char y) {
+            if(x == 'a'|| x == 'e' || x == 'i' || x == 'o' || x == 'u') {
+                if(y == 'a'|| y == 'e' || y == 'i' || y == 'o' || y == 'u') {
+                    return true;
+                }
             }
-            count.push_back(total);
+            return false;
         }
-        return count;
-    }
-};
+    
+        int count(vector<int> indexes, int l, int r) {
+            int cnt = 0;
+            for(auto x : indexes) {
+                if (x >= l && x <= r) cnt++;
+            }
+            return cnt;
+        }
+    
+    public:
+        vector<int> vowelStrings(vector<string>& words, vector<vector<int>>& queries) {
+            vector<int> indexes;
+            int n = words.size();
+            for(int i = 0; i < n; i++) {
+                if (checkVowel(words[i][0], words[i][words[i].size() - 1])) {
+                    indexes.push_back(i);
+                }
+            }
+    
+            vector<int> ans;
+            for(auto x : queries) {
+                ans.push_back(count(indexes, x[0], x[1]));
+            }
+            return ans;
+        }
+    };
