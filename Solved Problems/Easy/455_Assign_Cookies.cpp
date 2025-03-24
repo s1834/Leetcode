@@ -10,6 +10,7 @@ class Solution {
                     i++;
                     j++;
                 } else if(g[i] > s[j]) j++;
+                else i++;
             }
             return count;
         }
