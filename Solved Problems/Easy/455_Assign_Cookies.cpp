@@ -5,12 +5,11 @@ class Solution {
             sort(g.begin(), g.end());
             sort(s.begin(), s.end());
             while(i < n && j < m) {
-                if(g[i] == s[j]) {
+                if(g[i] <= s[j]) {
                     count++;
                     i++;
                     j++;
                 } else if(g[i] > s[j]) j++;
-                else i++;
             }
             return count;
         }
