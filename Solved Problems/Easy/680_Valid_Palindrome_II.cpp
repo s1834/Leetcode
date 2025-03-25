@@ -2,18 +2,34 @@ class Solution {
     public:
         bool validPalindrome(string s) {
             int i = 0, j = s.size() - 1;
-            bool palindrome = false, remove = true;
+            bool palindrome = false;
             while(j > i) {
                 if(s[i] == s[j]) {
                     palindrome = true;
                     i++;
                     j--;
-                } else if(remove) {
-                    if(s[i] == s[j - 1]) j--;
-                    else i++;
-                    remove = false;
                 } else {
-                    return false;
+                    int temp1 = i, temp2 = j;
+                    i++;
+                    while(j >= i) {
+                        if(s[i] == s[j]) {
+                            palindrome = true;
+                            i++;
+                            j--;
+                        } else {
+                            palindrome = false;
+                            break;
+                        }
+                    }
+                    if (palindrome) return true;
+                    while(temp2 >= temp1) {
+                        if(s[temp1] == s[temp2]) {
+                            palindrome = true;
+                            temp1++;
+                            temp2--;
+                        } else return false;
+                    }
+                    break;
                 }
             }
             return true;
