@@ -9,7 +9,7 @@ class Solution {
                     i++;
                     j--;
                 } else {
-                    int temp1 = i, temp2 = j;
+                    int temp1 = i, temp2 = j - 1;
                     i++;
                     while(j >= i) {
                         if(s[i] == s[j]) {
