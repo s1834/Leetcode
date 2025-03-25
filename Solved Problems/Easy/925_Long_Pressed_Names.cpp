@@ -10,6 +10,7 @@ class Solution {
                 }
                 else return false;
             }
+            if(i != n - 1) return false;
             return true;
         }
     };
