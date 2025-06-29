@@ -4,7 +4,7 @@ public:
         set<int> s;
         for(int x: nums) s.insert(x);
         
-        int mx = 1;
+        int mx = 0;
         for(auto x : s) {
             int temp = x, count = 1;
             while(s.find(temp + 1) != s.end()) {
@@ -16,7 +16,6 @@ public:
         return mx;
     }
 };
-
 
 // class Solution {
 // public:
