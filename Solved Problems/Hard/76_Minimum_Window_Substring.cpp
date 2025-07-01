@@ -28,10 +28,14 @@ public:
         for(auto x : mp1) if(x.second > mp2[x.first]) return "";
     
         string ans = "";
+        while(l <= r && !mp1[s[r]] || mp2[s[r]] > mp1[s[r]]) {
+            if(mp1[s[r]]) mp2[s[r]]--;
+            r--;
+        }
         if(r - l + 1 >= t.size() && r - l + 1 < mn) {
-                minL = l;
-                minR = r - 1;
-            }
+            minL = l;
+            minR = r;
+        }
         for(int i = minL; i <= minR; i++) ans += s[i];
         return ans;
     }
