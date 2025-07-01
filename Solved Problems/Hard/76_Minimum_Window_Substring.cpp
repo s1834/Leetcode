@@ -8,7 +8,7 @@ public:
         while(r < n) {
             if(mp1[s[r]]) mp2[s[r]]++;
 
-            while(!mp1[s[l]] || mp2[s[l]] > mp1[s[l]]) {
+            while(l <= r && !mp1[s[l]] || mp2[s[l]] > mp1[s[l]]) {
                 if(mp1[s[l]]) mp2[s[l]]--;
                 l++;
             }
