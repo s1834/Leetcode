@@ -591,35 +591,35 @@ operations required to transform word1 into word2.
 */
 
 // Version 2: Recursion + Memoization 2
-class Solution {
-    private:
-        vector<vector<int>> dp;
+// class Solution {
+//     private:
+//         vector<vector<int>> dp;
     
-        int solve(string& word1, string& word2, int n, int m) {
-            if(n == 0 || m == 0) return n + m; 
+//         int solve(string& word1, string& word2, int n, int m) {
+//             if(n == 0 || m == 0) return n + m; 
             
-            if(dp[n][m] != -1) return dp[n][m];
+//             if(dp[n][m] != -1) return dp[n][m];
     
-            if(word1[n - 1] == word2[m - 1]) return dp[n][m] = solve(word1, word2, n - 1, m - 1);
-            else {
-                int ins = 1 + solve(word1, word2, n, m - 1);
-                int del = 1 + solve(word1, word2, n - 1, m);
-                int rep = 1 + solve(word1, word2, n - 1, m - 1);
+//             if(word1[n - 1] == word2[m - 1]) return dp[n][m] = solve(word1, word2, n - 1, m - 1);
+//             else {
+//                 int ins = 1 + solve(word1, word2, n, m - 1);
+//                 int del = 1 + solve(word1, word2, n - 1, m);
+//                 int rep = 1 + solve(word1, word2, n - 1, m - 1);
     
-                return dp[n][m] = min({ins, del, rep});
-            }
+//                 return dp[n][m] = min({ins, del, rep});
+//             }
     
-            return -1;
-        }
+//             return -1;
+//         }
     
-    public:
-        int minDistance(string word1, string word2) {
-            int n = word1.size();
-            int m = word2.size();
-            dp.assign(n + 1, vector<int>(m + 1, -1));
-            return solve(word1, word2, n, m);
-        }
-    };
+//     public:
+//         int minDistance(string word1, string word2) {
+//             int n = word1.size();
+//             int m = word2.size();
+//             dp.assign(n + 1, vector<int>(m + 1, -1));
+//             return solve(word1, word2, n, m);
+//         }
+//     };
 
 /*
 LeetCode 72. Edit Distance
@@ -1139,4 +1139,559 @@ The answer is:
     minimum number of insertions,
     deletions, and replacements
     required to transform word1 into word2.
+*/
+
+// Version 3: Bottom-Up
+class Solution {
+    public:
+        int minDistance(string word1, string word2) {
+            int n = word1.size();
+            int m = word2.size();
+            vector<vector<int>> dp(n + 1, vector<int>(m + 1, -1));
+    
+            for(int i = 0; i <= n; i++) {
+                for(int j = 0; j <= m; j++) {
+                    if(i == 0 || j == 0) dp[i][j] = i + j;
+                    else if(word1[i - 1] == word2[j - 1]) dp[i][j] = dp[i - 1][j - 1];
+                    else {
+                        int ins = 1 + dp[i][j - 1];
+                        int del = 1 + dp[i - 1][j];
+                        int rep = 1 + dp[i - 1][j - 1];
+    
+                        dp[i][j] = min({ins, del, rep});
+                    }
+                }
+            }
+    
+            return dp[n][m];
+        }
+    };
+
+/*
+LeetCode 72. Edit Distance
+
+Version 3: Bottom-Up Dynamic Programming
+
+Approach:
+---------
+
+We use Dynamic Programming to find the minimum number of
+operations required to convert word1 into word2.
+
+We are allowed 3 operations:
+
+    1. Insert a character
+    2. Delete a character
+    3. Replace a character
+
+Instead of using recursion, we build the entire DP table
+iteratively from smaller subproblems to larger subproblems.
+
+------------------------------------------------------------
+
+DP Definition:
+--------------
+
+    dp[i][j]
+
+represents the minimum number of operations required to convert:
+
+    word1[0 ... i-1]
+
+into:
+
+    word2[0 ... j-1]
+
+In other words:
+
+    i = number of characters considered from word1
+    j = number of characters considered from word2
+
+Therefore:
+
+    dp[n][m]
+
+contains the answer for the complete strings.
+
+------------------------------------------------------------
+
+Why do we use n + 1 and m + 1?
+------------------------------
+
+    vector<vector<int>> dp(n + 1, vector<int>(m + 1, -1));
+
+We use n + 1 rows and m + 1 columns because we also need to
+represent the case where one of the strings is empty.
+
+For example:
+
+    dp[0][0]
+
+means:
+
+    "" -> ""
+
+    dp[i][0]
+
+means:
+
+    word1[0 ... i-1] -> ""
+
+    dp[0][j]
+
+means:
+
+    "" -> word2[0 ... j-1]
+
+The extra row and column represent these empty-string cases.
+
+------------------------------------------------------------
+
+Base Cases:
+-----------
+
+    if(i == 0 || j == 0)
+        dp[i][j] = i + j;
+
+If one of the strings is empty, the answer is simply the number
+of remaining characters.
+
+Case 1:
+-------
+
+    i == 0
+
+word1 is empty.
+
+To create word2 with j characters, we need to insert all j
+characters.
+
+Therefore:
+
+    dp[0][j] = j
+
+Case 2:
+-------
+
+    j == 0
+
+word2 is empty.
+
+To convert word1 with i characters into an empty string, we need
+to delete all i characters.
+
+Therefore:
+
+    dp[i][0] = i
+
+Both cases are represented by:
+
+    i + j
+
+because one of i or j is zero.
+
+------------------------------------------------------------
+
+When Characters Are Equal:
+---------------------------
+
+    else if(word1[i - 1] == word2[j - 1])
+        dp[i][j] = dp[i - 1][j - 1];
+
+The current characters are:
+
+    word1[i - 1]
+    word2[j - 1]
+
+If they are equal, we do not need any operation.
+
+For example:
+
+    word1 = "abc"
+    word2 = "adc"
+
+When processing the last character:
+
+    'c' == 'c'
+
+So the last characters can be matched directly.
+
+We simply solve the remaining prefixes:
+
+    word1[0 ... i-2]
+    word2[0 ... j-2]
+
+Therefore:
+
+    dp[i][j] = dp[i - 1][j - 1]
+
+Notice that there is NO +1 because no operation is required.
+
+------------------------------------------------------------
+
+When Characters Are Different:
+------------------------------
+
+If:
+
+    word1[i - 1] != word2[j - 1]
+
+we have three possible operations:
+
+    Insert
+    Delete
+    Replace
+
+We calculate the cost of all three and take the minimum.
+
+------------------------------------------------------------
+
+1. INSERT
+----------
+
+    int ins = 1 + dp[i][j - 1];
+
+We want to insert the character:
+
+    word2[j - 1]
+
+into word1.
+
+After inserting it, the current character of word2 is matched,
+but we have not removed a character from word1.
+
+Therefore:
+
+    i remains the same
+    j decreases by 1
+
+So:
+
+    insert = 1 + dp[i][j - 1]
+
+The +1 represents the insertion operation.
+
+Example:
+
+    word1 = "abc"
+    word2 = "abcd"
+
+We can insert 'd' into word1.
+
+------------------------------------------------------------
+
+2. DELETE
+----------
+
+    int del = 1 + dp[i - 1][j];
+
+We delete the current character:
+
+    word1[i - 1]
+
+from word1.
+
+After deleting it, we still need to match the same number of
+characters from word2.
+
+Therefore:
+
+    i decreases by 1
+    j remains the same
+
+So:
+
+    delete = 1 + dp[i - 1][j]
+
+The +1 represents the deletion operation.
+
+Example:
+
+    word1 = "abcd"
+    word2 = "abc"
+
+We can delete 'd' from word1.
+
+------------------------------------------------------------
+
+3. REPLACE
+-----------
+
+    int rep = 1 + dp[i - 1][j - 1];
+
+The current characters are different, so we can replace:
+
+    word1[i - 1]
+
+with:
+
+    word2[j - 1]
+
+After replacing them, both current characters are handled.
+
+Therefore:
+
+    i decreases by 1
+    j decreases by 1
+
+So:
+
+    replace = 1 + dp[i - 1][j - 1]
+
+The +1 represents the replacement operation.
+
+------------------------------------------------------------
+
+Choosing the Minimum:
+----------------------
+
+After calculating all three possibilities:
+
+    int ins = 1 + dp[i][j - 1];
+    int del = 1 + dp[i - 1][j];
+    int rep = 1 + dp[i - 1][j - 1];
+
+we choose the operation requiring the minimum number of
+operations:
+
+    dp[i][j] = min({ins, del, rep});
+
+------------------------------------------------------------
+
+Bottom-Up Order:
+----------------
+
+We iterate:
+
+    for(int i = 0; i <= n; i++)
+        for(int j = 0; j <= m; j++)
+
+This works because dp[i][j] depends only on already calculated
+smaller states:
+
+    dp[i - 1][j]       -> previous row
+    dp[i][j - 1]       -> previous column
+    dp[i - 1][j - 1]   -> diagonal
+
+So when calculating dp[i][j], all required states have already
+been calculated.
+
+------------------------------------------------------------
+
+DP Table Example:
+-----------------
+
+Suppose:
+
+    word1 = "abc"
+    word2 = "ac"
+
+The DP table represents:
+
+             ""   a   c
+         ""   0   1   2
+         a    1   0   1
+         b    2   1   1
+         c    3   2   1
+
+For example:
+
+    dp[1][1]
+
+compares:
+
+    'a' with 'a'
+
+They are equal, so:
+
+    dp[1][1] = dp[0][0] = 0
+
+Now:
+
+    dp[2][2]
+
+compares:
+
+    'b' with 'c'
+
+They are different.
+
+We try:
+
+    Insert:
+        1 + dp[2][1]
+
+    Delete:
+        1 + dp[1][2]
+
+    Replace:
+        1 + dp[1][1]
+
+and choose the minimum.
+
+------------------------------------------------------------
+
+Important Index Difference:
+----------------------------
+
+The DP indices represent LENGTHS, while string indices are
+0-based.
+
+Therefore, when we are at:
+
+    dp[i][j]
+
+the corresponding characters are:
+
+    word1[i - 1]
+    word2[j - 1]
+
+NOT:
+
+    word1[i]
+    word2[j]
+
+This is because row 0 and column 0 represent the empty string.
+
+------------------------------------------------------------
+
+Algorithm:
+----------
+
+    1. Let n = word1.size() and m = word2.size().
+
+    2. Create a DP table of size:
+
+           (n + 1) x (m + 1)
+
+    3. Fill the first row and first column:
+
+           dp[i][0] = i
+           dp[0][j] = j
+
+       because converting to/from an empty string requires
+       only insertions or deletions.
+
+    4. For every remaining cell:
+
+       If characters are equal:
+
+           dp[i][j] = dp[i - 1][j - 1]
+
+       Otherwise:
+
+           insert  = 1 + dp[i][j - 1]
+           delete  = 1 + dp[i - 1][j]
+           replace = 1 + dp[i - 1][j - 1]
+
+           dp[i][j] = min(insert, delete, replace)
+
+    5. Return:
+
+           dp[n][m]
+
+------------------------------------------------------------
+
+Why Bottom-Up DP?
+-----------------
+
+The previous recursive solution used:
+
+    solve(n, m)
+
+and recursively calculated smaller states.
+
+Here, we calculate those smaller states first and directly store
+their results in the table.
+
+So instead of:
+
+    solve(n, m)
+       |
+       +--> solve(n-1, m)
+       +--> solve(n, m-1)
+       +--> solve(n-1, m-1)
+
+we build:
+
+    smaller states
+          |
+          v
+    larger states
+          |
+          v
+       dp[n][m]
+
+This avoids recursion and makes the DP dependencies explicit.
+
+------------------------------------------------------------
+
+Time Complexity:
+----------------
+
+There are:
+
+    (n + 1) * (m + 1)
+
+DP states.
+
+Each state performs constant work.
+
+Therefore:
+
+    O(n * m)
+
+------------------------------------------------------------
+
+Space Complexity:
+-----------------
+
+The DP table contains:
+
+    (n + 1) * (m + 1)
+
+elements.
+
+Therefore:
+
+    O(n * m)
+
+------------------------------------------------------------
+
+Core Idea:
+----------
+
+                word1[i-1] == word2[j-1]
+                         |
+                         v
+                  No operation
+                         |
+                         v
+                  dp[i-1][j-1]
+
+
+                word1[i-1] != word2[j-1]
+                         |
+              +----------+----------+
+              |          |          |
+              v          v          v
+           Insert     Delete     Replace
+              |          |          |
+          dp[i][j-1] dp[i-1][j] dp[i-1][j-1]
+              |          |          |
+              +----------+----------+
+                         |
+                         v
+                       +1
+                         |
+                         v
+                    Take minimum
+
+
+The final answer is:
+
+    dp[n][m]
+
+which represents the minimum number of insertions, deletions,
+and replacements required to transform word1 into word2.
 */
