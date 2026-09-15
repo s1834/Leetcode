@@ -1,32 +1,32 @@
 // Version 1: Recursion + Memoization 1
-// class Solution {
-//     private:
-//         int m, n;
-//         vector<vector<int>> dp;
+class Solution {
+    private:
+        int m, n;
+        vector<vector<int>> dp;
     
-//         int solve(string& word1, string& word2, int i, int j) {
-//             if(i == m) return n - j;
-//             else if(j == n) return m - i;
+        int solve(string& word1, string& word2, int i, int j) {
+            if(i == m) return n - j;
+            else if(j == n) return m - i;
     
-//             if(dp[i][j] != -1) return dp[i][j];
+            if(dp[i][j] != -1) return dp[i][j];
             
-//             if(word1[i] == word2[j]) return dp[i][j] = solve(word1, word2, i + 1, j + 1);
-//             else {
-//                 int remove1 = 1 + solve(word1, word2, i + 1, j);
-//                 int remove2 = 1 + solve(word1, word2, i, j + 1);
+            if(word1[i] == word2[j]) return dp[i][j] = solve(word1, word2, i + 1, j + 1);
+            else {
+                int remove1 = 1 + solve(word1, word2, i + 1, j);
+                int remove2 = 1 + solve(word1, word2, i, j + 1);
     
-//                 return dp[i][j] = min(remove1, remove2);
-//             }
-//         }
+                return dp[i][j] = min(remove1, remove2);
+            }
+        }
     
-//     public:
-//         int minDistance(string word1, string word2) {
-//             m = word1.size();
-//             n = word2.size();
-//             dp.assign(m + 1, vector<int>(n + 1, -1));
-//             return solve(word1, word2, 0, 0);
-//         }
-//     };
+    public:
+        int minDistance(string word1, string word2) {
+            m = word1.size();
+            n = word2.size();
+            dp.assign(m + 1, vector<int>(n + 1, -1));
+            return solve(word1, word2, 0, 0);
+        }
+    };
 
 /*
 LeetCode 583. Delete Operation for Two Strings
@@ -1228,4 +1228,368 @@ The key idea is:
 The final answer is:
 
     solve(word1, word2, m, n)
+*/
+
+// Version 3: Bottom-Up
+class Solution {
+    public:
+        int minDistance(string word1, string word2) {
+            int m = word1.size();
+            int n = word2.size();
+    
+            vector<vector<int>> dp(m + 1, vector<int>(n + 1, -1));
+            for(int i = 0; i <= m; i++) {
+                for(int j = 0; j <= n; j++) {
+                    if(i == 0 || j == 0) dp[i][j] = i + j;
+                    else if(word1[i - 1] == word2[j - 1]) dp[i][j] = dp[i - 1][j - 1];
+                    else {
+                        int remove1 = 1 + dp[i - 1][j];
+                        int remove2 = 1 + dp[i][j - 1];
+                        dp[i][j] = min(remove1, remove2);
+                    }
+                }
+            }
+    
+            return dp[m][n];
+        }
+    };
+
+/*
+LeetCode 583. Delete Operation for Two Strings
+
+Approach:
+---------
+
+We use Dynamic Programming with a bottom-up approach.
+
+The goal is to find the minimum number of deletions required to
+make word1 and word2 equal.
+
+At every position, we compare the characters currently being
+considered.
+
+------------------------------------------------------------
+
+DP Definition:
+--------------
+
+    dp[i][j] = minimum number of deletions required to make
+               the first i characters of word1 and the first j
+               characters of word2 equal.
+
+Therefore:
+
+    dp[m][n]
+
+is the answer for the complete two strings.
+
+------------------------------------------------------------
+
+Base Cases:
+-----------
+
+If one of the strings is empty, the only way to make both strings
+equal is to delete every character from the other string.
+
+    if(i == 0 || j == 0)
+        dp[i][j] = i + j;
+
+For example:
+
+    word1 = "abc"
+    word2 = ""
+
+We need to delete all 3 characters:
+
+    dp[3][0] = 3
+
+Similarly:
+
+    word1 = ""
+    word2 = "xyz"
+
+    dp[0][3] = 3
+
+------------------------------------------------------------
+
+Case 1: Characters Are Equal
+----------------------------
+
+If:
+
+    word1[i - 1] == word2[j - 1]
+
+then the current characters already match.
+
+We do not need to delete either character.
+
+Therefore, we simply use the answer for the previous characters:
+
+    dp[i][j] = dp[i - 1][j - 1];
+
+For example:
+
+    word1 = "abc"
+    word2 = "adc"
+
+When comparing the last characters:
+
+    'c' == 'c'
+
+So we can keep both and solve:
+
+    "ab" vs "ad"
+
+------------------------------------------------------------
+
+Case 2: Characters Are Different
+---------------------------------
+
+If:
+
+    word1[i - 1] != word2[j - 1]
+
+then both characters cannot remain in the final equal strings.
+
+We have two choices:
+
+    1. Delete word1[i - 1]
+    2. Delete word2[j - 1]
+
+------------------------------------------------------------
+
+Choice 1: Remove From word1
+---------------------------
+
+Delete the current character from word1.
+
+    int remove1 = 1 + dp[i - 1][j];
+
+The `1` represents the deletion we just performed.
+
+After deleting word1[i - 1], we need to make:
+
+    first (i - 1) characters of word1
+    first j characters of word2
+
+equal.
+
+------------------------------------------------------------
+
+Choice 2: Remove From word2
+---------------------------
+
+Delete the current character from word2.
+
+    int remove2 = 1 + dp[i][j - 1];
+
+Again, the `1` represents the deletion we just performed.
+
+Now we need to make:
+
+    first i characters of word1
+    first (j - 1) characters of word2
+
+equal.
+
+------------------------------------------------------------
+
+Choose the Better Option:
+--------------------------
+
+Since we want the minimum number of deletions:
+
+    dp[i][j] = min(remove1, remove2);
+
+Therefore:
+
+    if(word1[i - 1] != word2[j - 1]) {
+        int remove1 = 1 + dp[i - 1][j];
+        int remove2 = 1 + dp[i][j - 1];
+
+        dp[i][j] = min(remove1, remove2);
+    }
+
+------------------------------------------------------------
+
+Bottom-Up Order:
+----------------
+
+Each state depends on:
+
+    dp[i - 1][j]
+    dp[i][j - 1]
+    dp[i - 1][j - 1]
+
+Therefore, we calculate the table from:
+
+    i = 0 -> m
+    j = 0 -> n
+
+so that all required smaller states are already calculated.
+
+------------------------------------------------------------
+
+Example:
+--------
+
+    word1 = "sea"
+    word2 = "eat"
+
+We want to make them equal.
+
+One optimal solution is:
+
+    "sea" -> "ea"
+    "eat" -> "ea"
+
+So we delete:
+
+    's' from word1
+    't' from word2
+
+Answer:
+
+    2
+
+The DP table ultimately gives:
+
+    dp[3][3] = 2
+
+------------------------------------------------------------
+
+Why Does This Work?
+-------------------
+
+At every state dp[i][j]:
+
+    If the current characters are equal:
+        Keep both characters.
+
+    If they are different:
+        One of them must be deleted.
+
+We try both possible deletions and choose the one requiring
+fewer total deletions.
+
+Since every state represents the optimal answer for its
+corresponding prefixes, building the table from smaller prefixes
+to larger prefixes gives the optimal answer for the complete
+strings.
+
+------------------------------------------------------------
+
+Algorithm:
+----------
+
+    1. Let m = word1.size() and n = word2.size().
+
+    2. Create a DP table of size:
+
+           (m + 1) x (n + 1)
+
+    3. Initialize the first row and first column.
+
+    4. For every i and j:
+
+           If word1[i - 1] == word2[j - 1]:
+               dp[i][j] = dp[i - 1][j - 1]
+
+           Otherwise:
+               dp[i][j] = 1 + min(
+                   dp[i - 1][j],
+                   dp[i][j - 1]
+               )
+
+    5. Return:
+
+           dp[m][n]
+
+------------------------------------------------------------
+
+Time Complexity:
+----------------
+
+There are:
+
+    (m + 1) * (n + 1)
+
+DP states.
+
+Each state takes O(1) work.
+
+Therefore:
+
+    Time = O(m * n)
+
+------------------------------------------------------------
+
+Space Complexity:
+-----------------
+
+The DP table contains:
+
+    (m + 1) * (n + 1)
+
+values.
+
+Therefore:
+
+    Space = O(m * n)
+
+------------------------------------------------------------
+
+Core Idea:
+----------
+
+    Same characters
+          |
+          v
+    Keep both
+          |
+          v
+    dp[i - 1][j - 1]
+
+
+    Different characters
+          |
+          v
+    Delete from word1
+          OR
+    Delete from word2
+          |
+          v
+    Take minimum
+          |
+          v
+    dp[i][j] = 1 + min(
+                    dp[i - 1][j],
+                    dp[i][j - 1]
+                )
+
+------------------------------------------------------------
+
+Code Mapping:
+-------------
+
+    dp[i][j]
+
+    = answer for first i chars of word1
+      and first j chars of word2
+
+
+    dp[i - 1][j]
+
+    = delete word1[i - 1]
+
+
+    dp[i][j - 1]
+
+    = delete word2[j - 1]
+
+
+    dp[i - 1][j - 1]
+
+    = both current characters are removed/handled together
+      when they are equal
 */
