@@ -1,46 +1,47 @@
-class Solution {
-    private:
-        int n;
-        vector<vector<int>> dp;
+// Version 1: Recursion + Memoization
+// class Solution {
+//     private:
+//         int n;
+//         vector<vector<int>> dp;
     
-        bool isPalindrome(string& s, int i, int j) {
-            while(i < j) {
-                if(s[i] != s[j]) return false;
-                i++;
-                j--;
-            }
-            return true;
-        }
+//         bool isPalindrome(string& s, int i, int j) {
+//             while(i < j) {
+//                 if(s[i] != s[j]) return false;
+//                 i++;
+//                 j--;
+//             }
+//             return true;
+//         }
     
-        int solve(string& s, int& k, int i, int j) {
-            if(j >= n) return 0;
+//         int solve(string& s, int& k, int i, int j) {
+//             if(j >= n) return 0;
     
-            if(dp[i][j] != -1) return dp[i][j];
+//             if(dp[i][j] != -1) return dp[i][j];
     
-            if(isPalindrome(s, i, j)) {
-                int take =  1 + solve(s, k, j + 1, j + k);
-                int grow = solve(s, k, i, j + 1);
-                int slide = solve(s, k, i + 1, j + 1);
+//             if(isPalindrome(s, i, j)) {
+//                 int take =  1 + solve(s, k, j + 1, j + k);
+//                 int grow = solve(s, k, i, j + 1);
+//                 int slide = solve(s, k, i + 1, j + 1);
     
-                return dp[i][j] = max({take, grow, slide});
-            }
+//                 return dp[i][j] = max({take, grow, slide});
+//             }
             
-            int grow = solve(s, k, i, j + 1);
-            int slide = solve(s, k, i + 1, j + 1);
+//             int grow = solve(s, k, i, j + 1);
+//             int slide = solve(s, k, i + 1, j + 1);
     
-            return dp[i][j] = max(grow, slide);
-        }
+//             return dp[i][j] = max(grow, slide);
+//         }
     
-    public:
-        int maxPalindromes(string s, int k) {
-            n = s.size();
-            if(k == 1) return n;
+//     public:
+//         int maxPalindromes(string s, int k) {
+//             n = s.size();
+//             if(k == 1) return n;
     
-            dp.assign(n, vector<int>(n, -1));
+//             dp.assign(n, vector<int>(n, -1));
             
-            return solve(s, k, 0, k - 1);
-        }
-    };
+//             return solve(s, k, 0, k - 1);
+//         }
+//     };
 
 /*
 LeetCode 2472. Maximum Number of Non-overlapping Palindrome Substrings
@@ -572,4 +573,594 @@ If the range is not a palindrome:
 
 The DP chooses the maximum number of valid non-overlapping
 palindromes among these possibilities.
+*/
+
+// Version 2: Bottom-Up
+class Solution {
+    private:
+        bool isPalindrome(string& s, int i, int j) {
+            while(i < j) {
+                if(s[i] != s[j]) return false;
+                i++;
+                j--;
+            }
+            return true;
+        }
+    
+    public:
+        int maxPalindromes(string s, int k) {
+            int n = s.size();
+            if(k == 1) return n;
+    
+            vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+            
+            for(int i = n - 1; i >= 0; i--) {
+                for(int j = n - 1; j >= 0; j--) {
+                    if(isPalindrome(s, i, j)) {
+                        int take =  1 + (j + k <= n ? dp[j + 1][j + k] : 0);
+                        int grow = dp[i][j + 1];
+                        int slide = dp[i + 1][j + 1];
+    
+                        dp[i][j] = max({take, grow, slide});
+                    }
+                    
+                    int grow = dp[i][j + 1];
+                    int slide = dp[i + 1][j + 1];
+    
+                    dp[i][j] = max({dp[i][j], grow, slide});
+                }
+            }
+    
+            return dp[0][k - 1];
+        }
+    };
+
+/*
+LeetCode 2472. Maximum Number of Non-overlapping Palindrome Substrings
+
+Approach:
+---------
+
+We use Dynamic Programming with a Bottom-Up approach.
+
+The goal is to find the maximum number of non-overlapping
+palindromic substrings of length at least k.
+
+Instead of using recursion + memoization, we build the DP table
+iteratively from the bottom/right side of the string.
+
+The main idea is the same as the recursive version:
+
+    1. TAKE  -> take s[i...j] as a palindrome.
+    2. GROW  -> increase j and consider a larger substring.
+    3. SLIDE -> move both i and j forward.
+
+------------------------------------------------------------
+
+isPalindrome():
+---------------
+
+    bool isPalindrome(string& s, int i, int j)
+
+This function checks whether the substring:
+
+    s[i...j]
+
+is a palindrome.
+
+We compare characters from both ends:
+
+    s[i] <-> s[j]
+
+If they are different, return false.
+
+Otherwise, move towards the center:
+
+    i++
+    j--
+
+If all characters match, return true.
+
+------------------------------------------------------------
+
+DP Definition:
+--------------
+
+    dp[i][j]
+
+represents the maximum number of valid, non-overlapping
+palindromic substrings that can be obtained starting from
+the current state [i, j].
+
+The table has size:
+
+    (n + 1) x (n + 1)
+
+The extra row and column allow us to safely access states such as:
+
+    dp[i + 1][j + 1]
+    dp[i][j + 1]
+
+when i or j reaches n.
+
+All states are initially 0.
+
+------------------------------------------------------------
+
+Why do we iterate from right to left?
+--------------------------------------
+
+Our transitions depend on states with larger indices:
+
+    dp[i][j + 1]
+    dp[i + 1][j + 1]
+    dp[j + 1][j + k]
+
+Therefore, these states must already be calculated before
+calculating dp[i][j].
+
+So we iterate:
+
+    i = n - 1 -> 0
+    j = n - 1 -> 0
+
+This guarantees that the required future states are already
+available.
+
+------------------------------------------------------------
+
+Special Case: k == 1
+--------------------
+
+    if(k == 1) return n;
+
+If k = 1, every individual character is itself a palindrome.
+
+For example:
+
+    s = "abcde"
+
+We can choose:
+
+    "a", "b", "c", "d", "e"
+
+All of them are non-overlapping.
+
+Therefore, the maximum number of palindromes is simply:
+
+    n
+
+------------------------------------------------------------
+
+Main DP Loop:
+-------------
+
+    for(int i = n - 1; i >= 0; i--) {
+        for(int j = n - 1; j >= 0; j--) {
+
+We consider every possible state [i, j].
+
+For every state, we first check whether:
+
+    s[i...j]
+
+is a palindrome.
+
+------------------------------------------------------------
+
+Case 1: Current substring is a palindrome
+------------------------------------------
+
+    if(isPalindrome(s, i, j))
+
+If s[i...j] is a palindrome, we have the option to TAKE it.
+
+There are three possible choices.
+
+------------------------------------------------------------
+
+Choice 1: TAKE
+--------------
+
+    int take = 1 + (j + k <= n ? dp[j + 1][j + k] : 0);
+
+We select:
+
+    s[i...j]
+
+as one palindrome.
+
+Therefore:
+
+    +1
+
+is added to the answer.
+
+After selecting this palindrome, the next palindrome cannot
+overlap with it.
+
+So we move to:
+
+    j + 1
+
+and start considering the next range from there.
+
+The next state is:
+
+    dp[j + 1][j + k]
+
+The range:
+
+    [j + 1, j + k]
+
+has length k, which is the minimum allowed palindrome length.
+
+If:
+
+    j + k > n
+
+there are not enough characters remaining for another
+length-k range, so we use:
+
+    0
+
+instead.
+
+Therefore:
+
+    take = 1 + next valid answer
+
+------------------------------------------------------------
+
+Choice 2: GROW
+--------------
+
+    int grow = dp[i][j + 1];
+
+We keep the same starting index i but increase j.
+
+Current range:
+
+    [i ........ j]
+
+becomes:
+
+    [i .......... j + 1]
+
+This allows us to consider a larger substring.
+
+For example:
+
+    "aba"
+
+can be extended to:
+
+    "abac"
+    "abacc"
+    ...
+
+This is useful because even if the current palindrome is valid,
+a better answer may be obtained by considering a different
+larger range.
+
+------------------------------------------------------------
+
+Choice 3: SLIDE
+---------------
+
+    int slide = dp[i + 1][j + 1];
+
+We move both i and j forward:
+
+    [i, j]
+
+becomes:
+
+    [i + 1, j + 1]
+
+This shifts the current window one position to the right.
+
+This allows us to ignore the current starting position and
+search for a better palindrome later in the string.
+
+------------------------------------------------------------
+
+Choose the Best Option:
+-----------------------
+
+    dp[i][j] = max({take, grow, slide});
+
+If s[i...j] is a palindrome, we consider all three possibilities:
+
+    TAKE
+    GROW
+    SLIDE
+
+and store the maximum result.
+
+------------------------------------------------------------
+
+Important: GROW and SLIDE are checked again
+---------------------------------------------
+
+After the palindrome-specific block, we have:
+
+    int grow = dp[i][j + 1];
+    int slide = dp[i + 1][j + 1];
+
+    dp[i][j] = max({dp[i][j], grow, slide});
+
+This ensures that even if s[i...j] is NOT a palindrome,
+we can still continue searching.
+
+So there are effectively two cases:
+
+If s[i...j] is a palindrome:
+
+    dp[i][j] =
+        max(
+            take,
+            grow,
+            slide
+        );
+
+If s[i...j] is NOT a palindrome:
+
+    dp[i][j] =
+        max(
+            grow,
+            slide
+        );
+
+The second max is also useful when the palindrome exists because
+it makes sure that TAKE is not forced just because the current
+substring is a palindrome.
+
+------------------------------------------------------------
+
+Why do we start from dp[0][k - 1]?
+-----------------------------------
+
+The smallest valid palindrome must have length k.
+
+Therefore, the initial range is:
+
+    i = 0
+    j = k - 1
+
+because:
+
+    j - i + 1
+    = k - 1 - 0 + 1
+    = k
+
+So:
+
+    return dp[0][k - 1];
+
+gives the maximum number of valid non-overlapping palindromes
+starting from the first possible length-k window.
+
+------------------------------------------------------------
+
+Why are the chosen palindromes non-overlapping?
+------------------------------------------------
+
+Suppose we choose:
+
+    s[i...j]
+
+as a palindrome.
+
+The TAKE transition moves to:
+
+    dp[j + 1][j + k]
+
+Therefore, the next selected palindrome starts strictly after j.
+
+So:
+
+    First palindrome:
+        [i ........ j]
+
+    Next palindrome:
+                  [j+1 ........]
+
+There is no common index.
+
+Hence, the selected palindromes are guaranteed to be
+non-overlapping.
+
+------------------------------------------------------------
+
+Bottom-Up DP Flow:
+------------------
+
+The DP is essentially converting the recursive decisions into
+table lookups.
+
+Recursive version:
+
+    take  -> solve(j + 1, j + k)
+    grow  -> solve(i, j + 1)
+    slide -> solve(i + 1, j + 1)
+
+Bottom-Up version:
+
+    take  -> dp[j + 1][j + k]
+    grow  -> dp[i][j + 1]
+    slide -> dp[i + 1][j + 1]
+
+So instead of recursively calling solve(), we directly read
+the already-computed values from dp.
+
+------------------------------------------------------------
+
+Example:
+--------
+
+Suppose:
+
+    s = "abaccdbbd"
+    k = 3
+
+Initial state:
+
+    dp[0][2]
+
+because the first candidate has length:
+
+    2 - 0 + 1 = 3
+
+The substring is:
+
+    "aba"
+
+which is a palindrome.
+
+Therefore, we can:
+
+    TAKE:
+        select "aba"
+        +1
+        then continue after index 2
+
+or:
+
+    GROW:
+        consider a larger substring
+
+or:
+
+    SLIDE:
+        move the window forward
+
+The DP evaluates all these possibilities and keeps the maximum.
+
+------------------------------------------------------------
+
+Why do we need dp[n][*] and dp[*][n]?
+--------------------------------------
+
+The DP table is created as:
+
+    vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+
+The extra row/column provide valid boundary states.
+
+For example:
+
+    dp[i][n]
+    dp[n][j]
+
+represent states where we have moved beyond the string.
+
+Since there are no more characters to process, their value is:
+
+    0
+
+This allows transitions such as:
+
+    dp[i][j + 1]
+
+and:
+
+    dp[i + 1][j + 1]
+
+without going out of bounds.
+
+------------------------------------------------------------
+
+Overall Algorithm:
+------------------
+
+    1. If k == 1:
+           return n.
+
+    2. Create an (n + 1) x (n + 1) DP table initialized to 0.
+
+    3. Iterate i from n - 1 down to 0.
+
+    4. For every i, iterate j from n - 1 down to 0.
+
+    5. Check whether s[i...j] is a palindrome.
+
+    6. If it is a palindrome:
+           calculate TAKE.
+
+    7. Calculate GROW and SLIDE.
+
+    8. Store the maximum of all valid choices in dp[i][j].
+
+    9. Return:
+
+           dp[0][k - 1]
+
+------------------------------------------------------------
+
+Time Complexity:
+----------------
+
+There are:
+
+    O(n²)
+
+DP states.
+
+For every state, isPalindrome() can take:
+
+    O(n)
+
+in the worst case.
+
+Therefore:
+
+    O(n³)
+
+overall time complexity.
+
+------------------------------------------------------------
+
+Space Complexity:
+-----------------
+
+The DP table contains:
+
+    (n + 1) × (n + 1)
+
+elements.
+
+Therefore:
+
+    O(n²)
+
+space complexity.
+
+------------------------------------------------------------
+
+Core Idea:
+----------
+
+For every state [i, j]:
+
+                s[i ........ j]
+                       |
+                Is it palindrome?
+                       |
+             +---------+---------+
+             |                   |
+            YES                  NO
+             |                   |
+       +-----+-----+         GROW / SLIDE
+       |     |     |
+     TAKE  GROW  SLIDE
+       |
+       v
+   +1 palindrome
+       |
+       v
+   jump to j + 1
+
+The DP stores the maximum number of non-overlapping
+palindromic substrings that can be selected.
 */
