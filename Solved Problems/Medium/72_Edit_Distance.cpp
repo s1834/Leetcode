@@ -1,34 +1,35 @@
-class Solution {
-    private:
-        int n, m;
-        vector<vector<int>> dp;
+// Version 2: Recursion + Memoization 1
+// class Solution {
+//     private:
+//         int n, m;
+//         vector<vector<int>> dp;
     
-        int solve(string& word1, string& word2, int i, int j) {
-            if(i == n) return m - j; // insert in word1
-            else if(j == m) return n - i; // delete from word2
+//         int solve(string& word1, string& word2, int i, int j) {
+//             if(i == n) return m - j; // insert in word1
+//             else if(j == m) return n - i; // delete from word2
             
-            if(dp[i][j] != -1) return dp[i][j];
+//             if(dp[i][j] != -1) return dp[i][j];
     
-            if(word1[i] == word2[j]) return dp[i][j] = solve(word1, word2, i + 1, j + 1);
-            else {
-                int ins = 1 + solve(word1, word2, i, j + 1);
-                int del = 1 + solve(word1, word2, i + 1, j);
-                int rep = 1 + solve(word1, word2, i + 1, j + 1);
+//             if(word1[i] == word2[j]) return dp[i][j] = solve(word1, word2, i + 1, j + 1);
+//             else {
+//                 int ins = 1 + solve(word1, word2, i, j + 1);
+//                 int del = 1 + solve(word1, word2, i + 1, j);
+//                 int rep = 1 + solve(word1, word2, i + 1, j + 1);
     
-                return dp[i][j] = min({ins, del, rep});
-            }
+//                 return dp[i][j] = min({ins, del, rep});
+//             }
     
-            return -1;
-        }
+//             return -1;
+//         }
     
-    public:
-        int minDistance(string word1, string word2) {
-            n = word1.size();
-            m = word2.size();
-            dp.assign(n, vector<int>(m, -1));
-            return solve(word1, word2, 0, 0);
-        }
-    };
+//     public:
+//         int minDistance(string word1, string word2) {
+//             n = word1.size();
+//             m = word2.size();
+//             dp.assign(n, vector<int>(m, -1));
+//             return solve(word1, word2, 0, 0);
+//         }
+//     };
 
 /*
 LeetCode 72. Edit Distance
@@ -587,4 +588,555 @@ No operation is required.
 
 The DP finds the minimum number of INSERT, DELETE, and REPLACE
 operations required to transform word1 into word2.
+*/
+
+// Version 2: Recursion + Memoization 2
+class Solution {
+    private:
+        vector<vector<int>> dp;
+    
+        int solve(string& word1, string& word2, int n, int m) {
+            if(n == 0 || m == 0) return n + m; 
+            
+            if(dp[n][m] != -1) return dp[n][m];
+    
+            if(word1[n - 1] == word2[m - 1]) return dp[n][m] = solve(word1, word2, n - 1, m - 1);
+            else {
+                int ins = 1 + solve(word1, word2, n, m - 1);
+                int del = 1 + solve(word1, word2, n - 1, m);
+                int rep = 1 + solve(word1, word2, n - 1, m - 1);
+    
+                return dp[n][m] = min({ins, del, rep});
+            }
+    
+            return -1;
+        }
+    
+    public:
+        int minDistance(string word1, string word2) {
+            int n = word1.size();
+            int m = word2.size();
+            dp.assign(n + 1, vector<int>(m + 1, -1));
+            return solve(word1, word2, n, m);
+        }
+    };
+
+/*
+LeetCode 72. Edit Distance
+
+Approach:
+---------
+
+We use Dynamic Programming with Memoization (Top-Down DP).
+
+The goal is to convert word1 into word2 using the minimum number
+of operations.
+
+We are allowed 3 operations:
+
+    1. Insert a character
+    2. Delete a character
+    3. Replace a character
+
+Instead of working with the strings themselves, we define the DP
+state using how many characters are still remaining in each string.
+
+------------------------------------------------------------
+
+DP State:
+---------
+
+    dp[n][m]
+
+represents the minimum number of operations required to convert:
+
+    word1[0 ... n-1]
+
+into:
+
+    word2[0 ... m-1]
+
+Here:
+
+    n = number of characters currently considered from word1
+    m = number of characters currently considered from word2
+
+So the recursive function:
+
+    solve(word1, word2, n, m)
+
+returns the minimum edit distance between the first n characters
+of word1 and the first m characters of word2.
+
+------------------------------------------------------------
+
+Base Case:
+----------
+
+    if(n == 0 || m == 0) return n + m;
+
+If one of the strings becomes empty, the answer is straightforward.
+
+Case 1:
+-------
+
+    n == 0
+
+word1 is empty, but word2 still has m characters.
+
+The only way to create word2 is to insert all m characters.
+
+Therefore:
+
+    operations = m
+
+Case 2:
+-------
+
+    m == 0
+
+word2 is empty, but word1 still has n characters.
+
+The only way to convert word1 into an empty string is to delete
+all n characters.
+
+Therefore:
+
+    operations = n
+
+Both cases can be represented together as:
+
+    n + m
+
+because one of n or m is zero.
+
+------------------------------------------------------------
+
+Memoization:
+------------
+
+    if(dp[n][m] != -1) return dp[n][m];
+
+There can be many different recursive paths that reach the same
+state (n, m).
+
+Without memoization, the same state would be calculated repeatedly.
+
+We store the answer for every state in:
+
+    dp[n][m]
+
+If the value has already been calculated, return it immediately.
+
+This reduces the number of states to:
+
+    O(n * m)
+
+------------------------------------------------------------
+
+Case 1: Characters Are Equal
+----------------------------
+
+    if(word1[n - 1] == word2[m - 1])
+
+The last characters of the current prefixes are already equal.
+
+For example:
+
+    word1 = "horse"
+    word2 = "roses"
+
+If:
+
+    word1[n - 1] == word2[m - 1]
+
+we do not need any operation on these characters.
+
+We can simply ignore the matching characters and solve the
+remaining prefixes:
+
+    solve(word1, word2, n - 1, m - 1)
+
+Therefore:
+
+    dp[n][m] = solve(n - 1, m - 1)
+
+------------------------------------------------------------
+
+Case 2: Characters Are Different
+---------------------------------
+
+If:
+
+    word1[n - 1] != word2[m - 1]
+
+then we have 3 possible operations.
+
+We calculate the cost of all three and take the minimum.
+
+------------------------------------------------------------
+
+1. INSERT
+----------
+
+    int ins = 1 + solve(word1, word2, n, m - 1);
+
+We want to insert:
+
+    word2[m - 1]
+
+into word1.
+
+After inserting that character, the last character of word2
+has been matched.
+
+Therefore, we move only in word2:
+
+    n stays the same
+    m decreases by 1
+
+So:
+
+    insert = 1 + solve(n, m - 1)
+
+The +1 represents the insertion operation itself.
+
+Example:
+
+    word1 = "abc"
+    word2 = "abcd"
+
+We can insert 'd' into word1.
+
+------------------------------------------------------------
+
+2. DELETE
+----------
+
+    int del = 1 + solve(word1, word2, n - 1, m);
+
+We delete:
+
+    word1[n - 1]
+
+from word1.
+
+After deleting it, we move only in word1:
+
+    n decreases by 1
+    m stays the same
+
+So:
+
+    delete = 1 + solve(n - 1, m)
+
+The +1 represents the deletion operation.
+
+Example:
+
+    word1 = "abcd"
+    word2 = "abc"
+
+We can delete 'd' from word1.
+
+------------------------------------------------------------
+
+3. REPLACE
+-----------
+
+    int rep = 1 + solve(word1, word2, n - 1, m - 1);
+
+Since the two characters are different, we can replace:
+
+    word1[n - 1]
+
+with:
+
+    word2[m - 1]
+
+After replacing them, both characters are matched.
+
+Therefore, move in both strings:
+
+    n decreases by 1
+    m decreases by 1
+
+So:
+
+    replace = 1 + solve(n - 1, m - 1)
+
+The +1 represents the replacement operation.
+
+------------------------------------------------------------
+
+Choosing the Minimum:
+----------------------
+
+We have three possible operations:
+
+    ins = 1 + solve(n, m - 1)
+
+    del = 1 + solve(n - 1, m)
+
+    rep = 1 + solve(n - 1, m - 1)
+
+We choose the operation that requires the minimum total number
+of operations:
+
+    dp[n][m] = min({ins, del, rep});
+
+------------------------------------------------------------
+
+Why Does Insert Use (n, m - 1)?
+-------------------------------
+
+This is an important part of the problem.
+
+Suppose:
+
+    word1 = "abc"
+    word2 = "abcd"
+
+We need to insert 'd'.
+
+After inserting 'd', the last character of word2 is handled,
+but word1 itself has not lost a character.
+
+Therefore:
+
+    word1 -> n remains the same
+    word2 -> m decreases
+
+So:
+
+    insert -> solve(n, m - 1)
+
+------------------------------------------------------------
+
+Why Does Delete Use (n - 1, m)?
+-------------------------------
+
+Suppose:
+
+    word1 = "abcd"
+    word2 = "abc"
+
+We delete 'd' from word1.
+
+The character from word2 has not been matched yet, so:
+
+    word1 -> n decreases
+    word2 -> m remains the same
+
+Therefore:
+
+    delete -> solve(n - 1, m)
+
+------------------------------------------------------------
+
+Why Does Replace Use (n - 1, m - 1)?
+------------------------------------
+
+Suppose:
+
+    word1 = "abc"
+    word2 = "abd"
+
+The last characters are:
+
+    c != d
+
+We can replace:
+
+    c -> d
+
+After that replacement, both characters are handled.
+
+Therefore:
+
+    word1 -> n - 1
+    word2 -> m - 1
+
+So:
+
+    replace -> solve(n - 1, m - 1)
+
+------------------------------------------------------------
+
+Example:
+--------
+
+    word1 = "horse"
+    word2 = "ros"
+
+We start with:
+
+    solve("horse", "ros", 5, 3)
+
+At every state:
+
+    If last characters are equal:
+        move diagonally
+
+    If last characters are different:
+        try:
+
+            INSERT
+            DELETE
+            REPLACE
+
+        and take the minimum.
+
+The recursion eventually reaches states where one string becomes
+empty, which gives the remaining number of required insertions
+or deletions.
+
+------------------------------------------------------------
+
+Bottom-Up Interpretation:
+-------------------------
+
+The same DP can be visualized as a table.
+
+        ""   r   o   s
+    ""   0   1   2   3
+    h    1   ?   ?   ?
+    o    2   ?   ?   ?
+    r    3   ?   ?   ?
+    s    4   ?   ?   ?
+    e    5   ?   ?   ?
+
+The first row represents converting an empty word1 into prefixes
+of word2.
+
+Therefore:
+
+    0 1 2 3 ...
+
+The first column represents converting prefixes of word1 into
+an empty word2.
+
+Therefore:
+
+    0
+    1
+    2
+    3
+    ...
+
+For every other cell:
+
+    if characters are equal:
+
+        dp[i][j] = dp[i - 1][j - 1]
+
+    otherwise:
+
+        dp[i][j] = 1 + min(
+            dp[i][j - 1],       // insert
+            dp[i - 1][j],       // delete
+            dp[i - 1][j - 1]    // replace
+        )
+
+Our recursive solution is simply calculating this same table
+from the top-right side using memoization.
+
+------------------------------------------------------------
+
+Algorithm:
+----------
+
+    1. Store the sizes of both strings.
+
+    2. Create a DP table initialized with -1.
+
+    3. Start recursion from:
+
+           solve(word1, word2, n, m)
+
+    4. If either string becomes empty:
+           return n + m.
+
+    5. If the current characters are equal:
+           solve(n - 1, m - 1)
+
+    6. Otherwise calculate:
+
+           insert
+           delete
+           replace
+
+    7. Take the minimum of the three.
+
+    8. Store the result in dp[n][m].
+
+------------------------------------------------------------
+
+Time Complexity:
+----------------
+
+There are:
+
+    n * m
+
+different DP states.
+
+Each state performs only constant work apart from the recursive
+calls.
+
+Therefore:
+
+    O(n * m)
+
+------------------------------------------------------------
+
+Space Complexity:
+-----------------
+
+DP table:
+
+    O(n * m)
+
+Recursive call stack:
+
+    O(n + m)
+
+Therefore overall:
+
+    O(n * m)
+
+(the DP table dominates).
+
+------------------------------------------------------------
+
+Core Idea:
+----------
+
+At every position where the characters are different, we have
+exactly three choices:
+
+                 Different characters
+                         |
+             +-----------+-----------+
+             |           |           |
+           Insert      Delete      Replace
+             |           |           |
+          (n,m-1)     (n-1,m)    (n-1,m-1)
+             |           |           |
+             +-----------+-----------+
+                         |
+                      minimum
+
+If the characters are already equal:
+
+                 Same characters
+                        |
+                        v
+                   (n-1, m-1)
+
+The answer is:
+
+    minimum number of insertions,
+    deletions, and replacements
+    required to transform word1 into word2.
 */
