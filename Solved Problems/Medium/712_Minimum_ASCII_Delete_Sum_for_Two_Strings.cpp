@@ -473,3 +473,606 @@ Code Mapping:
     = current characters are equal,
       so keep both
 */
+
+// Version 2: Recursion + Memoization 2
+class Solution {
+    private:
+        vector<vector<int>> dp;
+    
+        int solve(string& word1, string& word2, int m, int n) {
+            if(m == 0) {
+                int sum = 0;
+                while(n != 0) {
+                    sum += word2[n -1];
+                    n--;
+                }
+                return sum;
+            } else if(n == 0) {
+                int sum = 0;
+                while(m != 0) {
+                    sum += word1[m - 1];
+                    m--;
+                }
+                return sum;
+            }
+    
+            if(dp[m][n] != -1) return dp[m][n];
+            
+            if(word1[m - 1] == word2[n - 1]) return dp[m][n] = solve(word1, word2, m - 1, n - 1);
+            else {
+                int remove1 = word1[m - 1] + solve(word1, word2, m - 1, n);
+                int remove2 = word2[n - 1] + solve(word1, word2, m, n - 1);
+                return dp[m][n] = min(remove1, remove2);
+            }
+        }
+    
+    public:
+        int minimumDeleteSum(string s1, string s2) {
+            int m = s1.size();
+            int n = s2.size();
+            dp.assign(m + 1, vector<int>(n + 1, -1));
+            return solve(s1, s2, m, n);
+        }
+    };
+
+/*
+LeetCode 712. Minimum ASCII Delete Sum for Two Strings
+
+Approach:
+---------
+
+We use Dynamic Programming with Recursion + Memoization.
+
+The goal is to make word1 and word2 equal by deleting characters.
+
+Unlike LeetCode 583, where every deletion costs 1, here the cost
+of deleting a character is its ASCII value.
+
+Therefore, we need to minimize the TOTAL ASCII value of all deleted
+characters.
+
+------------------------------------------------------------
+
+DP Definition:
+--------------
+
+    dp[m][n] = minimum ASCII delete sum required to make
+
+               first m characters of word1
+               first n characters of word2
+
+               equal.
+
+Here m and n represent the LENGTHS of the prefixes we are
+currently considering.
+
+Therefore:
+
+    solve(word1, word2, m, n)
+
+means:
+
+    Make word1[0 ... m-1]
+    and word2[0 ... n-1]
+
+    equal using minimum ASCII deletion cost.
+
+The final answer is:
+
+    solve(word1, word2, m, n)
+
+------------------------------------------------------------
+
+Base Case 1: word1 Is Empty
+----------------------------
+
+    if(m == 0)
+
+There are no characters left in word1.
+
+Therefore, every remaining character of word2 must be deleted.
+
+For example:
+
+    word1 = ""
+    word2 = "abc"
+
+We must delete:
+
+    'a' + 'b' + 'c'
+
+So we calculate the ASCII sum of the remaining characters:
+
+    while(n != 0) {
+        sum += word2[n - 1];
+        n--;
+    }
+
+and return that sum.
+
+For example:
+
+    ASCII('a') = 97
+    ASCII('b') = 98
+    ASCII('c') = 99
+
+Total:
+
+    97 + 98 + 99 = 294
+
+------------------------------------------------------------
+
+Base Case 2: word2 Is Empty
+----------------------------
+
+    else if(n == 0)
+
+There are no characters left in word2.
+
+Therefore, every remaining character of word1 must be deleted.
+
+For example:
+
+    word1 = "abc"
+    word2 = ""
+
+We must delete all characters:
+
+    'a' + 'b' + 'c'
+
+So:
+
+    while(m != 0) {
+        sum += word1[m - 1];
+        m--;
+    }
+
+returns the total ASCII deletion cost.
+
+------------------------------------------------------------
+
+Memoization:
+------------
+
+    if(dp[m][n] != -1)
+        return dp[m][n];
+
+The same state (m, n) can be reached through different sequences
+of deletions.
+
+Instead of solving the same state repeatedly, we store its answer
+in:
+
+    dp[m][n]
+
+This avoids repeated calculations.
+
+------------------------------------------------------------
+
+Case 1: Last Characters Are Equal
+---------------------------------
+
+If:
+
+    word1[m - 1] == word2[n - 1]
+
+then the last characters of both prefixes are already equal.
+
+We do not need to delete either character.
+
+Therefore, we can keep both characters and solve the remaining
+prefixes:
+
+    solve(word1, word2, m - 1, n - 1)
+
+So:
+
+    dp[m][n] = dp[m - 1][n - 1]
+
+For example:
+
+    word1 = "abc"
+    word2 = "xbc"
+
+The last characters are:
+
+    'c' == 'c'
+
+So we keep both 'c's and solve:
+
+    "ab" and "xb"
+
+------------------------------------------------------------
+
+Case 2: Last Characters Are Different
+--------------------------------------
+
+If:
+
+    word1[m - 1] != word2[n - 1]
+
+then the two characters cannot both remain in the final equal
+strings.
+
+At least one of them must be deleted.
+
+There are two choices.
+
+------------------------------------------------------------
+
+Choice 1: Delete From word1
+---------------------------
+
+    int remove1 =
+        word1[m - 1] + solve(word1, word2, m - 1, n);
+
+We delete:
+
+    word1[m - 1]
+
+The cost of deleting it is its ASCII value:
+
+    word1[m - 1]
+
+After deleting it, we still need to make:
+
+    first (m - 1) characters of word1
+    first n characters of word2
+
+equal.
+
+Therefore:
+
+    remove1 =
+        ASCII(word1[m - 1])
+        + solve(m - 1, n)
+
+------------------------------------------------------------
+
+Choice 2: Delete From word2
+---------------------------
+
+    int remove2 =
+        word2[n - 1] + solve(word1, word2, m, n - 1);
+
+We delete:
+
+    word2[n - 1]
+
+The cost is:
+
+    word2[n - 1]
+
+Then we need to make:
+
+    first m characters of word1
+    first (n - 1) characters of word2
+
+equal.
+
+Therefore:
+
+    remove2 =
+        ASCII(word2[n - 1])
+        + solve(m, n - 1)
+
+------------------------------------------------------------
+
+Choose Minimum:
+---------------
+
+We want the minimum total ASCII deletion cost.
+
+Therefore:
+
+    dp[m][n] = min(remove1, remove2);
+
+So:
+
+    if(word1[m - 1] != word2[n - 1]) {
+
+        int remove1 =
+            word1[m - 1] + solve(word1, word2, m - 1, n);
+
+        int remove2 =
+            word2[n - 1] + solve(word1, word2, m, n - 1);
+
+        return dp[m][n] = min(remove1, remove2);
+    }
+
+------------------------------------------------------------
+
+Example:
+--------
+
+    word1 = "sea"
+    word2 = "eat"
+
+One optimal solution is:
+
+    "sea" -> "ea"
+    "eat" -> "ea"
+
+We delete:
+
+    's' from word1
+    't' from word2
+
+ASCII values:
+
+    's' = 115
+    't' = 116
+
+Total:
+
+    115 + 116 = 231
+
+Therefore:
+
+    answer = 231
+
+The DP considers both deletion possibilities whenever the current
+characters are different and chooses the minimum total cost.
+
+------------------------------------------------------------
+
+Why Do We Only Delete One Character When Characters Differ?
+------------------------------------------------------------
+
+Suppose:
+
+    word1[m - 1] != word2[n - 1]
+
+The two characters are different.
+
+Since the final strings must be equal, these two characters cannot
+both remain in their current positions.
+
+Therefore, at least one of them must be deleted.
+
+The two possible useful choices are:
+
+    Delete word1[m - 1]
+            OR
+    Delete word2[n - 1]
+
+We try both and choose the cheaper option.
+
+The recursive calls then solve the remaining prefixes optimally.
+
+------------------------------------------------------------
+
+Why Do We Keep Both When Characters Are Equal?
+-----------------------------------------------
+
+If:
+
+    word1[m - 1] == word2[n - 1]
+
+both characters can remain because they already match.
+
+Deleting either character would introduce an unnecessary positive
+ASCII deletion cost.
+
+Therefore, the optimal choice is to keep both:
+
+    solve(m - 1, n - 1)
+
+------------------------------------------------------------
+
+Why Use m - 1 and n - 1?
+-------------------------
+
+Here m and n represent the NUMBER OF CHARACTERS being considered,
+not the current zero-based indexes.
+
+For example:
+
+    m = 3
+
+means we are considering:
+
+    word1[0], word1[1], word1[2]
+
+Therefore, the last character is:
+
+    word1[m - 1]
+
+After removing/handling that character, the remaining prefix has
+length:
+
+    m - 1
+
+The same logic applies to word2.
+
+------------------------------------------------------------
+
+Algorithm:
+----------
+
+    1. Let m = word1.size() and n = word2.size().
+
+    2. Create a memoization table:
+
+           dp[m + 1][n + 1]
+
+    3. Start from:
+
+           solve(word1, word2, m, n)
+
+    4. If m == 0:
+           delete all remaining characters of word2.
+
+    5. If n == 0:
+           delete all remaining characters of word1.
+
+    6. If the current characters are equal:
+           keep both and solve:
+
+               solve(m - 1, n - 1)
+
+    7. Otherwise:
+           try deleting the current character from word1
+           and deleting the current character from word2.
+
+    8. Take the minimum ASCII deletion cost.
+
+    9. Memoize every state.
+
+------------------------------------------------------------
+
+Recursion Flow:
+---------------
+
+                solve(m, n)
+                    |
+             +------+------+
+             |             |
+        chars equal     chars different
+             |             |
+             v             v
+       solve(m-1,n-1)   +--------+--------+
+                        |                 |
+                        v                 v
+                  delete word1      delete word2
+                        |                 |
+                        v                 v
+                  word1[m-1] +      word2[n-1] +
+                  solve(m-1,n)      solve(m,n-1)
+                        |                 |
+                        +--------+--------+
+                                 |
+                                 v
+                               min
+
+------------------------------------------------------------
+
+Difference From LeetCode 583:
+-----------------------------
+
+LeetCode 583 asks for the minimum NUMBER of deletions.
+
+Therefore:
+
+    delete word1 -> cost 1
+    delete word2 -> cost 1
+
+Here, the deletion cost depends on the character.
+
+For example:
+
+    deleting 'a' -> cost 97
+    deleting 'z' -> cost 122
+
+Therefore the transitions are:
+
+    remove1 =
+        word1[m - 1] + solve(m - 1, n)
+
+    remove2 =
+        word2[n - 1] + solve(m, n - 1)
+
+------------------------------------------------------------
+
+Time Complexity:
+----------------
+
+There are:
+
+    (m + 1) * (n + 1)
+
+different DP states.
+
+Each state performs O(1) work, excluding the base-case sum.
+
+Therefore:
+
+    Time = O(m * n)
+
+------------------------------------------------------------
+
+Space Complexity:
+-----------------
+
+The memoization table contains:
+
+    (m + 1) * (n + 1)
+
+states.
+
+The recursion stack can go up to:
+
+    O(m + n)
+
+Therefore:
+
+    Space = O(m * n) + O(m + n)
+
+which is:
+
+    O(m * n)
+
+------------------------------------------------------------
+
+Core Idea:
+----------
+
+        word1[m-1] == word2[n-1]
+                    |
+                    v
+               Keep both
+                    |
+                    v
+             solve(m-1, n-1)
+
+
+        word1[m-1] != word2[n-1]
+                    |
+              +-----+-----+
+              |           |
+              v           v
+       Delete word1   Delete word2
+              |           |
+       cost = word1   cost = word2
+              |           |
+              +-----+-----+
+                    |
+                    v
+                  minimum
+
+------------------------------------------------------------
+
+Code Mapping:
+-------------
+
+    dp[m][n]
+
+    = minimum ASCII deletion cost for
+      word1[0 ... m-1] and word2[0 ... n-1]
+
+
+    word1[m - 1]
+
+    = last character of the current word1 prefix
+
+
+    word2[n - 1]
+
+    = last character of the current word2 prefix
+
+
+    solve(m - 1, n)
+
+    = delete the last character of word1
+
+
+    solve(m, n - 1)
+
+    = delete the last character of word2
+
+
+    solve(m - 1, n - 1)
+
+    = current characters are equal,
+      so keep both
+*/
