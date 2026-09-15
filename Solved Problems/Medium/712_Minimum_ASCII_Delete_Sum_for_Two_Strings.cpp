@@ -1076,3 +1076,429 @@ Code Mapping:
     = current characters are equal,
       so keep both
 */
+
+// Version 3: Bottom-Up
+class Solution {
+    public:
+        int minimumDeleteSum(string s1, string s2) {
+            int m = s1.size();
+            int n = s2.size();
+            vector<vector<int>> dp(m + 1, vector<int>(n + 1, 0));
+    
+            // s2 is empty, so delete all characters from s1
+            for(int i = 1; i <= m; i++) dp[i][0] = s1[i - 1] + dp[i - 1][0];
+    
+            // s1 is empty, so delete all characters from s2
+            for(int j = 1; j <= n; j++) dp[0][j] = s2[j - 1] + dp[0][j - 1];
+    
+            for(int i = 1; i <= m; i++) {
+                for(int j = 1; j <= n; j++) {
+                    if(s1[i - 1] == s2[j - 1]) dp[i][j] = dp[i - 1][j - 1];
+                    else {
+                        int remove1 = s1[i - 1] + dp[i - 1][j];
+                        int remove2 = s2[j - 1] + dp[i][j - 1];
+                        dp[i][j] = min(remove1, remove2);
+                    }
+                }
+            }
+    
+            return dp[m][n];
+        }
+    };
+
+/*
+LeetCode 712. Minimum ASCII Delete Sum for Two Strings
+
+Approach:
+---------
+
+We use Dynamic Programming (DP).
+
+The goal is to make s1 and s2 equal by deleting characters from either
+string while minimizing the total ASCII value of all deleted characters.
+
+------------------------------------------------------------
+
+DP Definition:
+--------------
+
+    dp[i][j] = minimum ASCII delete sum required to make
+
+               s1[0 ... i - 1]
+
+               and
+
+               s2[0 ... j - 1]
+
+               equal.
+
+So:
+
+    dp[i][j]
+
+represents the answer for the first i characters of s1 and the
+first j characters of s2.
+
+------------------------------------------------------------
+
+Base Cases:
+-----------
+
+If s2 is empty:
+
+    dp[i][0]
+
+We have no characters in s2, so the only way to make both strings
+equal is to delete all characters from s1.
+
+Therefore:
+
+    dp[i][0] = dp[i - 1][0] + ASCII(s1[i - 1])
+
+For example:
+
+    s1 = "ab"
+
+    dp[1][0] = 'a'
+    dp[2][0] = 'a' + 'b'
+
+Similarly, if s1 is empty:
+
+    dp[0][j]
+
+we must delete all characters from s2.
+
+Therefore:
+
+    dp[0][j] = dp[0][j - 1] + ASCII(s2[j - 1])
+
+------------------------------------------------------------
+
+Transition:
+-----------
+
+For every pair of characters:
+
+    s1[i - 1]
+    s2[j - 1]
+
+we have two cases.
+
+------------------------------------------------------------
+
+Case 1: Characters Are Equal
+----------------------------
+
+If:
+
+    s1[i - 1] == s2[j - 1]
+
+there is no reason to delete either character.
+
+Both characters can remain in the final equal string.
+
+So we simply solve the previous prefixes:
+
+    dp[i][j] = dp[i - 1][j - 1]
+
+Example:
+
+    s1 = "a..."
+    s2 = "a..."
+
+Since both current characters are 'a', keep both.
+
+    dp[i][j]
+        |
+        v
+    dp[i-1][j-1]
+
+------------------------------------------------------------
+
+Case 2: Characters Are Different
+---------------------------------
+
+If:
+
+    s1[i - 1] != s2[j - 1]
+
+then the two characters cannot both remain as matching characters.
+
+We have two choices:
+
+    1. Delete s1[i - 1]
+    2. Delete s2[j - 1]
+
+------------------------------------------------------------
+
+Choice 1: Delete Character From s1
+-----------------------------------
+
+Delete:
+
+    s1[i - 1]
+
+The cost of deleting it is its ASCII value.
+
+After deleting it, we need to make:
+
+    s1[0 ... i - 2]
+
+and
+
+    s2[0 ... j - 1]
+
+equal.
+
+Therefore:
+
+    remove1 = s1[i - 1] + dp[i - 1][j]
+
+------------------------------------------------------------
+
+Choice 2: Delete Character From s2
+-----------------------------------
+
+Delete:
+
+    s2[j - 1]
+
+The cost is its ASCII value.
+
+Then we need to make:
+
+    s1[0 ... i - 1]
+
+and
+
+    s2[0 ... j - 2]
+
+equal.
+
+Therefore:
+
+    remove2 = s2[j - 1] + dp[i][j - 1]
+
+------------------------------------------------------------
+
+Choose Minimum:
+----------------
+
+We want the minimum total deletion cost:
+
+    dp[i][j] = min(remove1, remove2)
+
+So the transition is:
+
+    if(s1[i - 1] == s2[j - 1])
+        dp[i][j] = dp[i - 1][j - 1];
+
+    else {
+        int remove1 = s1[i - 1] + dp[i - 1][j];
+        int remove2 = s2[j - 1] + dp[i][j - 1];
+
+        dp[i][j] = min(remove1, remove2);
+    }
+
+------------------------------------------------------------
+
+Bottom-Up DP:
+--------------
+
+The table is filled from smaller prefixes to larger prefixes.
+
+    dp[0][0] = 0
+
+because two empty strings are already equal and require no deletion.
+
+Then we initialize:
+
+    dp[i][0]
+
+and
+
+    dp[0][j]
+
+because one of the strings is empty.
+
+After that, we calculate every:
+
+    dp[i][j]
+
+using previously calculated states.
+
+Finally:
+
+    dp[m][n]
+
+contains the minimum ASCII deletion sum for the complete strings.
+
+------------------------------------------------------------
+
+Example:
+---------
+
+    s1 = "sea"
+    s2 = "eat"
+
+The common character 'e' can be kept.
+
+Characters that need to be deleted can be:
+
+    s1: 's'
+    s2: 't'
+
+ASCII values:
+
+    's' = 115
+    't' = 116
+
+Total:
+
+    115 + 116 = 231
+
+Therefore:
+
+    answer = 231
+
+------------------------------------------------------------
+
+Why Do We Only Consider Deleting One Character?
+------------------------------------------------
+
+When:
+
+    s1[i - 1] != s2[j - 1]
+
+at least one of these two characters must be deleted.
+
+There is no benefit in keeping both because they are different
+characters and cannot match each other at this position.
+
+Therefore, we consider both possibilities:
+
+    delete from s1
+             OR
+    delete from s2
+
+and take the cheaper resulting solution.
+
+------------------------------------------------------------
+
+DP Table Meaning:
+-----------------
+
+For example:
+
+        ""   a   b   c
+    ""   0   a   a+b
+    a    a   0   ...
+    b   a+b  ...  ...
+    c   ...  ...  ...
+
+The first row represents:
+
+    s1 = ""
+
+The first column represents:
+
+    s2 = ""
+
+Every cell represents the minimum ASCII deletion cost for the
+corresponding prefixes.
+
+------------------------------------------------------------
+
+Algorithm:
+----------
+
+    1. Let m = s1.size() and n = s2.size().
+
+    2. Create a DP table:
+
+           dp[m + 1][n + 1]
+
+    3. Initialize dp[i][0] by deleting all characters from s1.
+
+    4. Initialize dp[0][j] by deleting all characters from s2.
+
+    5. For every i and j:
+
+           If characters are equal:
+               dp[i][j] = dp[i - 1][j - 1]
+
+           Otherwise:
+               delete s1[i - 1]
+               OR
+               delete s2[j - 1]
+
+               take the minimum cost.
+
+    6. Return:
+
+           dp[m][n]
+
+------------------------------------------------------------
+
+Time Complexity:
+----------------
+
+There are:
+
+    (m + 1) * (n + 1)
+
+DP states.
+
+Each state takes O(1) work.
+
+Therefore:
+
+    Time = O(m * n)
+
+------------------------------------------------------------
+
+Space Complexity:
+-----------------
+
+We store the entire DP table:
+
+    dp[m + 1][n + 1]
+
+Therefore:
+
+    Space = O(m * n)
+
+------------------------------------------------------------
+
+Core Idea:
+----------
+
+    Compare s1[i - 1] and s2[j - 1]
+
+              |
+        +-----+-----+
+        |           |
+      Same       Different
+        |           |
+        v           v
+      Keep       Delete one
+        |           |
+        v       +---+---+
+    dp[i-1][j-1] |     |
+                 v     v
+             Delete   Delete
+              s1       s2
+               |       |
+               v       v
+            dp[i-1][j] dp[i][j-1]
+                 \     /
+                  \   /
+                   min
+                    |
+                    v
+                 dp[i][j]
+
+The final answer is:
+
+    dp[m][n]
+*/
