@@ -1,31 +1,32 @@
-class Solution {
-    private:
-        int m, n;
-        vector<vector<int>> dp;
+// Version 1: Recursion + Memoization 1
+// class Solution {
+//     private:
+//         int m, n;
+//         vector<vector<int>> dp;
     
-        int solve(string& word1, string& word2, int i, int j) {
-            if(i == m) return n - j;
-            else if(j == n) return m - i;
+//         int solve(string& word1, string& word2, int i, int j) {
+//             if(i == m) return n - j;
+//             else if(j == n) return m - i;
     
-            if(dp[i][j] != -1) return dp[i][j];
+//             if(dp[i][j] != -1) return dp[i][j];
             
-            if(word1[i] == word2[j]) return dp[i][j] = solve(word1, word2, i + 1, j + 1);
-            else {
-                int remove1 = 1 + solve(word1, word2, i + 1, j);
-                int remove2 = 1 + solve(word1, word2, i, j + 1);
+//             if(word1[i] == word2[j]) return dp[i][j] = solve(word1, word2, i + 1, j + 1);
+//             else {
+//                 int remove1 = 1 + solve(word1, word2, i + 1, j);
+//                 int remove2 = 1 + solve(word1, word2, i, j + 1);
     
-                return dp[i][j] = min(remove1, remove2);
-            }
-        }
+//                 return dp[i][j] = min(remove1, remove2);
+//             }
+//         }
     
-    public:
-        int minDistance(string word1, string word2) {
-            m = word1.size();
-            n = word2.size();
-            dp.assign(m + 1, vector<int>(n + 1, -1));
-            return solve(word1, word2, 0, 0);
-        }
-    };
+//     public:
+//         int minDistance(string word1, string word2) {
+//             m = word1.size();
+//             n = word2.size();
+//             dp.assign(m + 1, vector<int>(n + 1, -1));
+//             return solve(word1, word2, 0, 0);
+//         }
+//     };
 
 /*
 LeetCode 583. Delete Operation for Two Strings
@@ -570,4 +571,661 @@ The key idea is:
 The final answer is:
 
     solve(word1, word2, 0, 0)
+*/
+
+// Version 2: Recursion + Memoization 2
+class Solution {
+    private:
+        int m, n;
+        vector<vector<int>> dp;
+    
+        int solve(string& word1, string& word2, int m, int n) {
+            if(m == 0 || n == 0) return m + n;
+    
+            if(dp[m][n] != -1) return dp[m][n];
+            
+            if(word1[m - 1] == word2[n - 1]) return dp[m][n] = solve(word1, word2, m - 1, n - 1);
+            else {
+                int remove1 = 1 + solve(word1, word2, m - 1, n);
+                int remove2 = 1 + solve(word1, word2, m, n - 1);
+    
+                return dp[m][n] = min(remove1, remove2);
+            }
+        }
+    
+    public:
+        int minDistance(string word1, string word2) {
+            m = word1.size();
+            n = word2.size();
+            dp.assign(m + 1, vector<int>(n + 1, -1));
+            return solve(word1, word2, m, n);
+        }
+    };
+
+/*
+LeetCode 583. Delete Operation for Two Strings
+
+Version 2: Recursion + Memoization 2
+
+Approach:
+---------
+
+We use Dynamic Programming with Memoization (Top-Down DP).
+
+The goal is to make word1 and word2 equal using the minimum
+number of deletion operations.
+
+The only allowed operation is:
+
+    Delete one character from either word1 or word2.
+
+At every state, we compare the LAST characters of the current
+prefixes of word1 and word2.
+
+There are two cases:
+
+    1. Last characters are equal
+       -> keep both characters and move diagonally.
+
+    2. Last characters are different
+       -> delete either the last character of word1
+          or the last character of word2,
+          and take the minimum.
+
+------------------------------------------------------------
+
+DP State:
+---------
+
+    dp[m][n]
+
+represents the minimum number of deletions required to make:
+
+    word1[0 ... m-1]
+
+and:
+
+    word2[0 ... n-1]
+
+equal.
+
+Here:
+
+    m = number of characters currently considered from word1
+    n = number of characters currently considered from word2
+
+So:
+
+    solve(word1, word2, m, n)
+
+solves the subproblem for the first m characters of word1 and
+the first n characters of word2.
+
+This version is slightly different from Version 1:
+
+    Version 1:
+        i and j represented starting indices.
+
+    Version 2:
+        m and n represent lengths of the current prefixes.
+
+Therefore, the current characters are:
+
+    word1[m - 1]
+    word2[n - 1]
+
+------------------------------------------------------------
+
+Base Case:
+----------
+
+    if(m == 0 || n == 0) return m + n;
+
+If either string becomes empty, all remaining characters from
+the other string must be deleted.
+
+Case 1:
+-------
+
+    m == 0
+
+word1 is empty, while word2 still contains n characters.
+
+We need to delete all n characters from word2.
+
+Therefore:
+
+    answer = n
+
+Case 2:
+-------
+
+    n == 0
+
+word2 is empty, while word1 still contains m characters.
+
+We need to delete all m characters from word1.
+
+Therefore:
+
+    answer = m
+
+Both cases are represented by:
+
+    m + n
+
+because one of them is zero.
+
+------------------------------------------------------------
+
+Memoization:
+------------
+
+    if(dp[m][n] != -1) return dp[m][n];
+
+The same (m, n) state can be reached through multiple recursive
+paths.
+
+Without memoization, we would repeatedly calculate the same
+subproblems.
+
+We store every calculated answer in:
+
+    dp[m][n]
+
+If the state has already been calculated, return it immediately.
+
+This reduces the number of states to:
+
+    O(m * n)
+
+------------------------------------------------------------
+
+Case 1: Last Characters Are Equal
+---------------------------------
+
+    if(word1[m - 1] == word2[n - 1])
+
+If the last characters are equal, we do not need to delete
+either of them.
+
+For example:
+
+    word1 = "abc"
+    word2 = "adc"
+
+At the current state, if:
+
+    word1[m - 1] == word2[n - 1]
+
+then both characters can remain in the final string.
+
+We simply remove them from consideration and solve the remaining
+prefixes:
+
+    solve(word1, word2, m - 1, n - 1)
+
+Therefore:
+
+    dp[m][n] = dp[m - 1][n - 1]
+
+There is NO +1 because we performed no deletion.
+
+------------------------------------------------------------
+
+Case 2: Last Characters Are Different
+--------------------------------------
+
+If:
+
+    word1[m - 1] != word2[n - 1]
+
+then the two characters cannot both remain as the final matching
+character.
+
+Since the only allowed operation is deletion, we have two choices:
+
+    1. Delete word1[m - 1]
+    2. Delete word2[n - 1]
+
+We try both and take the minimum.
+
+------------------------------------------------------------
+
+Choice 1: Remove From word1
+---------------------------
+
+    int remove1 = 1 + solve(word1, word2, m - 1, n);
+
+We delete:
+
+    word1[m - 1]
+
+from word1.
+
+After deleting it, word1 has one fewer character:
+
+    m -> m - 1
+
+while word2 remains unchanged:
+
+    n -> n
+
+Therefore:
+
+    remove1 = 1 + solve(m - 1, n)
+
+The +1 represents the deletion operation.
+
+------------------------------------------------------------
+
+Choice 2: Remove From word2
+---------------------------
+
+    int remove2 = 1 + solve(word1, word2, m, n - 1);
+
+We delete:
+
+    word2[n - 1]
+
+from word2.
+
+After deleting it:
+
+    m -> m
+
+    n -> n - 1
+
+Therefore:
+
+    remove2 = 1 + solve(m, n - 1)
+
+Again, the +1 represents the deletion operation.
+
+------------------------------------------------------------
+
+Choosing the Minimum:
+----------------------
+
+When the characters are different, we don't know which character
+should be removed.
+
+Therefore, we try both possibilities:
+
+    remove1 = 1 + solve(m - 1, n)
+
+    remove2 = 1 + solve(m, n - 1)
+
+and choose the minimum:
+
+    dp[m][n] = min(remove1, remove2);
+
+This guarantees the minimum number of deletions.
+
+------------------------------------------------------------
+
+Why Are We Comparing word1[m - 1] and word2[n - 1]?
+-----------------------------------------------------
+
+Here m and n represent LENGTHS, not 0-based indices.
+
+For example:
+
+    word1 = "abc"
+
+If:
+
+    m = 3
+
+then the last valid index is:
+
+    m - 1 = 2
+
+and therefore:
+
+    word1[m - 1] = word1[2] = 'c'
+
+Similarly:
+
+    word2[n - 1]
+
+represents the last character of the current prefix of word2.
+
+This is why we use:
+
+    word1[m - 1]
+    word2[n - 1]
+
+instead of:
+
+    word1[m]
+    word2[n]
+
+------------------------------------------------------------
+
+Example:
+--------
+
+    word1 = "sea"
+    word2 = "eat"
+
+We start with:
+
+    solve("sea", "eat", 3, 3)
+
+Compare:
+
+    word1[2] = 'a'
+    word2[2] = 't'
+
+They are different.
+
+Therefore, we have two choices:
+
+    Remove 'a' from word1
+        |
+        v
+    solve(2, 3)
+
+OR:
+
+    Remove 't' from word2
+        |
+        v
+    solve(3, 2)
+
+The recursion continues exploring both possibilities.
+
+Whenever the characters match, both lengths decrease:
+
+    solve(m - 1, n - 1)
+
+Eventually one string becomes empty, and the remaining characters
+of the other string are deleted.
+
+The minimum result is:
+
+    2
+
+------------------------------------------------------------
+
+Connection With LCS:
+--------------------
+
+This problem can also be solved using the Longest Common
+Subsequence (LCS).
+
+Suppose:
+
+    L = length of LCS(word1, word2)
+
+The LCS represents the maximum number of characters that can
+remain in BOTH strings.
+
+Therefore:
+
+    Characters deleted from word1 = m - L
+
+    Characters deleted from word2 = n - L
+
+Total deletions:
+
+    (m - L) + (n - L)
+
+    = m + n - 2L
+
+Our current DP directly calculates the minimum number of
+deletions without explicitly calculating the LCS.
+
+------------------------------------------------------------
+
+Difference From LeetCode 72:
+----------------------------
+
+LeetCode 72 (Edit Distance) allows:
+
+    Insert
+    Delete
+    Replace
+
+LeetCode 583 allows ONLY:
+
+    Delete
+
+Therefore, when characters are different, we have only two
+choices:
+
+    delete from word1
+    delete from word2
+
+There is NO replace operation.
+
+That is why the recurrence is:
+
+    min(
+        1 + solve(m - 1, n),
+        1 + solve(m, n - 1)
+    )
+
+instead of the three choices used in Edit Distance.
+
+------------------------------------------------------------
+
+DP Table Interpretation:
+------------------------
+
+The same recurrence can be represented using a bottom-up table.
+
+    dp[m][n]
+
+means:
+
+    minimum deletions required to make
+    word1[0...m-1] and word2[0...n-1] equal.
+
+When the last characters match:
+
+    dp[m][n] = dp[m - 1][n - 1]
+
+When they differ:
+
+    dp[m][n] = 1 + min(
+        dp[m - 1][n],
+        dp[m][n - 1]
+    )
+
+Base cases:
+
+    dp[0][n] = n
+
+    dp[m][0] = m
+
+Our recursive solution calculates exactly these states,
+but only when they are needed.
+
+------------------------------------------------------------
+
+State Transition:
+-----------------
+
+              word1[m-1] == word2[n-1]
+                         |
+                         v
+                 Keep both characters
+                         |
+                         v
+                   solve(m-1,n-1)
+                         |
+                         |
+                      No +1
+
+
+              word1[m-1] != word2[n-1]
+                         |
+                +--------+--------+
+                |                 |
+                v                 v
+          Remove word1      Remove word2
+                |                 |
+                v                 v
+        1 + solve(m-1,n)  1 + solve(m,n-1)
+                |                 |
+                +--------+--------+
+                         |
+                         v
+                       minimum
+
+------------------------------------------------------------
+
+Algorithm:
+----------
+
+    1. Find the lengths of both strings.
+
+    2. Create a DP table of size:
+
+           (m + 1) x (n + 1)
+
+       initialized with -1.
+
+    3. Start recursion with:
+
+           solve(word1, word2, m, n)
+
+    4. If either length becomes 0:
+
+           return m + n
+
+    5. If the last characters are equal:
+
+           solve(m - 1, n - 1)
+
+    6. Otherwise:
+
+           Remove the last character from word1.
+
+           Remove the last character from word2.
+
+    7. Take the minimum of the two choices.
+
+    8. Store the result in dp[m][n].
+
+    9. Return dp[m][n] through the initial recursive call.
+
+------------------------------------------------------------
+
+Why This DP Works:
+------------------
+
+At every step, we are deciding which characters can stay in the
+final common string.
+
+If the last characters are equal:
+
+        word1[m-1] == word2[n-1]
+
+we can safely keep both.
+
+If they are different:
+
+        word1[m-1] != word2[n-1]
+
+at least one of them must be removed.
+
+So we try:
+
+        remove word1[m-1]
+
+and:
+
+        remove word2[n-1]
+
+The optimal answer must come from one of these two choices.
+
+Memoization ensures that every unique pair:
+
+        (m, n)
+
+is solved only once.
+
+------------------------------------------------------------
+
+Time Complexity:
+----------------
+
+There are:
+
+    m * n
+
+possible DP states.
+
+Each state performs only constant work apart from recursive
+calls.
+
+Therefore:
+
+    O(m * n)
+
+------------------------------------------------------------
+
+Space Complexity:
+-----------------
+
+The DP table requires:
+
+    O(m * n)
+
+space.
+
+The recursion stack can grow up to:
+
+    O(m + n)
+
+Therefore overall:
+
+    O(m * n)
+
+because the DP table dominates.
+
+------------------------------------------------------------
+
+Core Idea:
+----------
+
+              Last characters equal
+                       |
+                       v
+                  Keep both
+                       |
+                       v
+                solve(m-1,n-1)
+
+
+              Last characters different
+                       |
+              +--------+--------+
+              |                 |
+              v                 v
+        Delete from word1  Delete from word2
+              |                 |
+              v                 v
+          (m-1,n)            (m,n-1)
+              |                 |
+              +--------+--------+
+                       |
+                       v
+                     min
+
+
+The key idea is:
+
+    If characters match, keep them.
+
+    If characters don't match, one of them must be deleted.
+
+    Try deleting either one and choose the minimum.
+
+The final answer is:
+
+    solve(word1, word2, m, n)
 */
