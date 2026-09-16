@@ -1,3 +1,4 @@
+// Version 1: Recursion + Memoization
 class Solution {
     private:
         int n;
@@ -521,4 +522,421 @@ Final answer:
 
 which represents the total number of palindromic substrings.
 
+*/
+
+// Version 2: Bottom-Up
+class Solution {
+    public:
+        int countSubstrings(string s) {
+            int n = s.size();
+            int count = 0;
+            vector<vector<bool>> dp(n, vector<bool>(n));
+            
+            for(int l = 1; l <= n; l++) {
+                for(int i = 0; i + l - 1 < n; i++) {
+                    int j = i + l - 1;
+    
+                    if(i == j) dp[i][j] = true;
+                    else if(i + 1 == j) dp[i][j] = (s[i] == s[j]);
+                    else dp[i][j] = (s[i] == s[j] && dp[i + 1][j - 1]);
+                    
+                    if(dp[i][j]) count++;
+                }
+            }
+    
+            return count;
+        }
+    };
+
+/*
+LeetCode 647. Palindromic Substrings
+
+Approach:
+---------
+
+We use Dynamic Programming to determine whether every substring
+s[i...j] is a palindrome.
+
+The main idea is:
+
+    A substring is a palindrome if:
+
+        1. Its first and last characters are equal.
+        2. The substring inside them is also a palindrome.
+
+So:
+
+    dp[i][j] = true
+        if s[i...j] is a palindrome.
+
+------------------------------------------------------------
+
+DP Definition:
+-------------
+
+    dp[i][j] = whether the substring from index i to index j
+               is a palindrome.
+
+For example:
+
+    s = "abcba"
+
+    dp[0][4] represents:
+
+        "abcba"
+
+Since:
+
+    s[0] == s[4]
+
+and:
+
+    dp[1][3] represents "bcb"
+
+which is also a palindrome,
+
+therefore:
+
+    dp[0][4] = true
+
+------------------------------------------------------------
+
+Base Case 1: Length = 1
+-----------------------
+
+Every single character is a palindrome.
+
+For example:
+
+    "a"
+    "b"
+    "c"
+
+So when:
+
+    i == j
+
+we set:
+
+    dp[i][j] = true;
+
+------------------------------------------------------------
+
+Base Case 2: Length = 2
+-----------------------
+
+For a substring containing exactly two characters,
+it is a palindrome only when both characters are equal.
+
+For example:
+
+    "aa" -> palindrome
+    "ab" -> not a palindrome
+
+Therefore:
+
+    else if(i + 1 == j)
+        dp[i][j] = (s[i] == s[j]);
+
+------------------------------------------------------------
+
+General Case:
+-------------
+
+For length >= 3:
+
+    dp[i][j] = (s[i] == s[j] && dp[i + 1][j - 1]);
+
+There are two conditions:
+
+    1. s[i] == s[j]
+
+The first and last characters must be equal.
+
+    2. dp[i + 1][j - 1]
+
+The substring excluding the first and last characters
+must also be a palindrome.
+
+For example:
+
+    s = "abcba"
+
+    i = 0
+    j = 4
+
+    s[0] == s[4]
+       |
+       v
+      'a' == 'a'
+
+and:
+
+    dp[1][3] = true
+
+because:
+
+    "bcb"
+
+is a palindrome.
+
+Therefore:
+
+    dp[0][4] = true
+
+------------------------------------------------------------
+
+Why Do We Iterate by Length?
+----------------------------
+
+We calculate:
+
+    l = 1 -> substrings of length 1
+    l = 2 -> substrings of length 2
+    l = 3 -> substrings of length 3
+    ...
+
+This is important because the general transition:
+
+    dp[i][j] = s[i] == s[j] && dp[i + 1][j - 1]
+
+depends on a smaller substring:
+
+    dp[i + 1][j - 1]
+
+which has length:
+
+    l - 2
+
+Therefore, smaller substrings must already be calculated.
+
+------------------------------------------------------------
+
+Finding i and j:
+-----------------
+
+For every substring length l:
+
+    i = starting index
+
+    j = i + l - 1
+
+For example, if:
+
+    l = 3
+
+and:
+
+    i = 2
+
+then:
+
+    j = 2 + 3 - 1
+      = 4
+
+So the substring is:
+
+    s[2...4]
+
+------------------------------------------------------------
+
+Counting Palindromic Substrings:
+---------------------------------
+
+Every time:
+
+    dp[i][j] == true
+
+the substring s[i...j] is a palindromic substring.
+
+Therefore:
+
+    if(dp[i][j]) count++;
+
+We count every occurrence separately.
+
+For example:
+
+    s = "aaa"
+
+The palindromic substrings are:
+
+    "a"   -> index 0
+    "a"   -> index 1
+    "a"   -> index 2
+    "aa"  -> index 0...1
+    "aa"  -> index 1...2
+    "aaa" -> index 0...2
+
+Total:
+
+    6
+
+------------------------------------------------------------
+
+Example:
+--------
+
+    s = "aaa"
+
+Length = 1:
+
+    "a" -> palindrome
+    "a" -> palindrome
+    "a" -> palindrome
+
+count = 3
+
+Length = 2:
+
+    "aa" -> palindrome
+    "aa" -> palindrome
+
+count = 5
+
+Length = 3:
+
+    "aaa" -> palindrome
+
+count = 6
+
+Return:
+
+    6
+
+------------------------------------------------------------
+
+Dry Run:
+--------
+
+For:
+
+    s = "aba"
+
+Initially:
+
+    dp = false for every substring
+
+Length = 1:
+
+    dp[0][0] = true    -> "a"
+    dp[1][1] = true    -> "b"
+    dp[2][2] = true    -> "a"
+
+count = 3
+
+Length = 2:
+
+    dp[0][1] = (a == b) = false
+    dp[1][2] = (b == a) = false
+
+count = 3
+
+Length = 3:
+
+    i = 0
+    j = 2
+
+    s[0] == s[2] -> true
+    dp[1][1]      -> true
+
+Therefore:
+
+    dp[0][2] = true
+
+"aba" is a palindrome.
+
+count = 4
+
+Return:
+
+    4
+
+------------------------------------------------------------
+
+Algorithm:
+----------
+
+    1. Create a 2D DP table.
+
+    2. Iterate over all possible substring lengths
+       from 1 to n.
+
+    3. For each substring s[i...j]:
+
+           If length == 1:
+               palindrome
+
+           Else if length == 2:
+               check s[i] == s[j]
+
+           Else:
+               check:
+                   s[i] == s[j]
+                   AND
+                   dp[i + 1][j - 1]
+
+    4. Whenever dp[i][j] is true, increment count.
+
+    5. Return count.
+
+------------------------------------------------------------
+
+Time Complexity:
+----------------
+
+There are O(n²) possible substrings.
+
+For every substring, we perform O(1) work because the
+palindrome result of the inner substring is already stored
+in dp.
+
+Therefore:
+
+    O(n²)
+
+------------------------------------------------------------
+
+Space Complexity:
+-----------------
+
+The DP table contains:
+
+    n × n
+
+entries.
+
+Therefore:
+
+    O(n²)
+
+------------------------------------------------------------
+
+Core Idea:
+----------
+
+Instead of checking every substring character-by-character,
+we reuse the result of the inner substring.
+
+                s[i] == s[j]
+                     |
+                     v
+              +-------------+
+              |             |
+              | dp[i+1][j-1]|
+              |             |
+              +-------------+
+                     |
+                     v
+              dp[i][j]
+
+So:
+
+    Palindrome(i, j)
+        =
+    s[i] == s[j]
+        &&
+    Palindrome(i + 1, j - 1)
+
+This allows us to solve the problem in O(n²) time.
 */
