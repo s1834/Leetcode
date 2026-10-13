@@ -1,43 +1,77 @@
+class Solution {
+    public:
+        int sumOfSquares(vector<int>& nums) {
+            int n = nums.size();
+            int ans = 0;
+            for(int i = 0; i < n; i ++) if(n % (i + 1) == 0) ans += nums[i] * nums[i];
+            return ans;
+        }
+    };
+
 /*
-    Approach: Direct Traversal + Conditional Squaring
+    Approach: Array Traversal + Divisibility Check
 
     The goal is to calculate the sum of squares of all elements whose
-    indices satisfy the given condition.
+    1-based positions divide the size of the array `n` exactly.
 
-    An element at index `i` is special if its 1-based position divides
-    the length of the array.
-
-    Since C++ uses 0-based indexing, the 1-based position of an element
-    is `i + 1`.
+    In other words, an element at index `i` contributes to the answer
+    if its position `(i + 1)` is a divisor of `n`.
 
     ------------------------------------------------------------
     Key Observation
     ------------------------------------------------------------
 
-    For an array of size `n`, an element `nums[i]` contributes to the
-    answer only when:
+    Arrays use 0-based indexing, but the problem considers 1-based
+    positions.
+
+    Therefore:
+
+        0-based index = i
+        1-based position = i + 1
+
+    An element is selected when:
 
         n % (i + 1) == 0
 
-    This checks whether the 1-based position of the element is a
-    divisor of the array length.
+    This condition checks whether `i + 1` divides `n` without leaving
+    a remainder.
 
-    For every such element, we add:
+    For every selected element, we add its square:
 
         nums[i] * nums[i]
 
-    to the answer.
-
     ------------------------------------------------------------
-    Algorithm
+    Step 1: Initialize variables
     ------------------------------------------------------------
 
-    1. Find the size of the array, `n`.
-    2. Initialize `ans = 0`.
-    3. Traverse every index `i` from `0` to `n - 1`.
-    4. Check whether `n % (i + 1) == 0`.
-    5. If true, add the square of `nums[i]` to `ans`.
-    6. Return `ans`.
+        int n = nums.size();
+        int ans = 0;
+
+    `n` stores the number of elements in the array.
+
+    `ans` maintains the sum of squares of all qualifying elements.
+    Initially, it is zero because no elements have been processed.
+
+    ------------------------------------------------------------
+    Step 2: Traverse the array
+    ------------------------------------------------------------
+
+        for(int i = 0; i < n; i++)
+
+    We visit every index from `0` to `n - 1`.
+
+    For each index, we check whether its 1-based position divides
+    the array size.
+
+        if(n % (i + 1) == 0)
+
+    If the condition is true, we add:
+
+        nums[i] * nums[i]
+
+    to `ans`.
+
+    If the condition is false, the element is skipped.
 
     ------------------------------------------------------------
     Example
@@ -48,47 +82,62 @@
         nums = [1, 2, 3, 4]
         n = 4
 
-    Check each element:
+    We examine every element:
 
-        i = 0:
-            1-based position = 1
-            4 % 1 == 0
-            Include 1^2 = 1
+    Index 0:
+        Position = 0 + 1 = 1
+        4 % 1 = 0
 
-        i = 1:
-            1-based position = 2
-            4 % 2 == 0
-            Include 2^2 = 4
+        Position 1 divides 4.
+        Add nums[0]^2 = 1^2 = 1
 
-        i = 2:
-            1-based position = 3
-            4 % 3 != 0
-            Skip 3
+        ans = 1
 
-        i = 3:
-            1-based position = 4
-            4 % 4 == 0
-            Include 4^2 = 16
+    Index 1:
+        Position = 1 + 1 = 2
+        4 % 2 = 0
 
-    Therefore:
+        Position 2 divides 4.
+        Add nums[1]^2 = 2^2 = 4
 
-        ans = 1 + 4 + 16 = 21
+        ans = 1 + 4 = 5
 
-    Output:
+    Index 2:
+        Position = 2 + 1 = 3
+        4 % 3 != 0
+
+        Position 3 does not divide 4.
+        Skip this element.
+
+        ans = 5
+
+    Index 3:
+        Position = 3 + 1 = 4
+        4 % 4 = 0
+
+        Position 4 divides 4.
+        Add nums[3]^2 = 4^2 = 16
+
+        ans = 5 + 16 = 21
+
+    Final answer:
 
         21
 
     ------------------------------------------------------------
-    Why Does This Work?
+    Why does this work?
     ------------------------------------------------------------
 
-    The condition `n % (i + 1) == 0` selects exactly those elements
-    whose 1-based positions divide the array length.
+    The loop checks every array position exactly once.
 
-    Every selected element contributes its square exactly once, while
-    every element that does not satisfy the condition is ignored.
+    For each position, the divisibility condition determines whether
+    that position should contribute to the answer.
 
-    Therefore, the algorithm computes the required sum.
+    Whenever the condition is satisfied, the square of the corresponding
+    element is added to `ans`.
+
+    All qualifying elements are therefore included, and all
+    non-qualifying elements are excluded.
 
     ------------------------------------------------------------
     Complexity Analysis
@@ -97,17 +146,18 @@
     Time Complexity: O(n)
 
         We traverse the array once and perform a constant amount of
-        work for each element.
+        work at each index.
 
     Space Complexity: O(1)
 
-        We use only a few variables, regardless of the array size.
+        We use only the variables `n`, `ans`, and `i`, regardless of
+        the size of the input array.
 
     ------------------------------------------------------------
     Core Idea
     ------------------------------------------------------------
 
-    Traverse the array, check whether each 1-based index divides the
-    array length, and add the square of the element whenever the
-    condition is satisfied.
+    Traverse the array and use `n % (i + 1) == 0` to identify elements
+    whose 1-based positions divide the array size. Add the square of
+    each qualifying element to the answer.
 */
