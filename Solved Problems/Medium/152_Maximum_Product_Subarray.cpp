@@ -1,3 +1,4 @@
+// Version 1
 class Solution {
     private:
         int n;
@@ -310,4 +311,130 @@ Also, using -1 as the uncomputed marker is ambiguous because
 particular implementation, solve() is called only once per
 index through the recursion, so the memoization check does
 not provide a meaningful optimization.
+*/
+
+// Version 2
+class Solution {
+    public:
+        int maxProduct(vector<int>& nums) {
+            int n = nums.size(), prefix = 1, suffix = 1, ans = INT_MIN;
+            for(int i = 0; i < n; i++) {
+                if(prefix == 0) prefix = 1;
+                if(suffix == 0) suffix = 1;
+    
+                prefix *= nums[i];
+                suffix *= nums[n - i - 1];
+                ans = max(ans, max(prefix, suffix));
+            }
+            return ans;
+        }
+    };
+
+/*
+    LeetCode 152: Maximum Product Subarray
+
+    Approach: Prefix and Suffix Product (Two Traversals in One Pass)
+
+    Intuition:
+    The product of a subarray can become negative because of negative
+    numbers. A negative number can turn a negative product into a
+    positive product when multiplied again.
+
+    Instead of maintaining maximum and minimum products using DP,
+    this approach calculates products from both directions:
+    1. Prefix product: Product of elements while traversing left to right.
+    2. Suffix product: Product of elements while traversing right to left.
+
+    At every index, we consider both products and update the answer.
+
+    Why do we need both directions?
+    - If the array contains an even number of negative elements, the
+      product of the entire segment can be positive.
+    - If it contains an odd number of negative elements, the maximum
+      product may exclude a negative element from either the beginning
+      or the end of that segment.
+    - Traversing from both directions ensures that we consider these
+      possible maximum-product subarrays.
+
+    Variables:
+    - n:
+        Stores the size of the input array.
+
+    - prefix:
+        Maintains the running product while traversing from left to right.
+
+    - suffix:
+        Maintains the running product while traversing from right to left.
+
+    - ans:
+        Stores the maximum product encountered so far.
+        Initialized to INT_MIN because the answer can be negative.
+
+    Step-by-Step Explanation:
+
+    1. Initialization:
+       prefix = 1, suffix = 1, ans = INT_MIN.
+
+       Both running products start at 1 because 1 is the multiplicative
+       identity.
+
+    2. Traverse the array:
+       For every index i from 0 to n-1:
+
+       - If prefix becomes 0, reset it to 1.
+         A zero breaks the current prefix segment. We start calculating
+         products again from the next element.
+
+       - If suffix becomes 0, reset it to 1.
+         Similarly, a zero breaks the current suffix segment.
+
+       - Multiply prefix by nums[i].
+         This extends the current product from the left.
+
+       - Multiply suffix by nums[n-i-1].
+         This extends the current product from the right.
+
+       - Update ans with the maximum of:
+             ans, prefix, suffix
+
+         This ensures that the best product encountered in either
+         direction is considered.
+
+    3. Return the answer:
+       After processing all elements, ans contains the maximum product
+       of any non-empty contiguous subarray.
+
+    Example Walkthrough:
+
+    nums = [2, 3, -2, 4]
+
+    | i | nums[i] | prefix | suffix | ans |
+    |---|---------|--------|--------|-----|
+    | 0 | 2       | 2      | 4      | 4   |
+    | 1 | 3       | 6      | -8     | 6   |
+    | 2 | -2      | -12    | 24     | 24  |
+    | 3 | 4       | -48    | 2      | 24  |
+
+    The maximum product is 6, from subarray [2, 3].
+
+    Note: In the third iteration, suffix is 24 because the suffix
+    traversal has processed [4, -2, 3]. The maximum product of that
+    suffix is not necessarily a valid answer explanation by itself;
+    the algorithm's correctness comes from considering all prefix and
+    suffix products across the traversal.
+
+    Complexity Analysis:
+
+    Time Complexity: O(n)
+        We traverse the array exactly once. Each iteration performs
+        constant-time operations.
+
+    Space Complexity: O(1)
+        Only a fixed number of variables are used. No additional
+        data structure is required.
+
+    Core Idea:
+    Calculate running products from both the left and right sides,
+    reset whenever a zero is encountered, and maintain the maximum
+    product found across both traversals.
 */
